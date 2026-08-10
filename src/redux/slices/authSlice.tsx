@@ -1,52 +1,57 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import type { AuthState, UtenteAutenticato } from "@/types/auth.types";
-
-const TOKEN_STORAGE_KEY = "msab_access_token";
-const USER_STORAGE_KEY = "msab_utente";
+import type { AuthState } from "@/interfaces/auth";
+import { loginUser } from "@/redux/thunks/authThunks";
+import {
+  leggiToken,
+  leggiUtente,
+  salvaSessione,
+  cancellaSessione,
+} from "@/utils/authStorage";
 
 function leggiStatoIniziale(): AuthState {
-  const accessToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-  const utenteRaw = localStorage.getItem(USER_STORAGE_KEY);
-  const utente = utenteRaw
-    ? (JSON.parse(utenteRaw) as UtenteAutenticato)
-    : null;
+  const accessToken = leggiToken();
+  const utente = leggiUtente();
 
   return {
     accessToken,
     utente,
     isAuthenticated: Boolean(accessToken && utente),
+    status: "idle",
+    error: null,
   };
-}
-
-interface CredenzialiPayload {
-  accessToken: string;
-  utente: UtenteAutenticato;
 }
 
 const authSlice = createSlice({
   name: "auth",
   initialState: leggiStatoIniziale(),
   reducers: {
-    setCredenziali: (state, action: PayloadAction<CredenzialiPayload>) => {
-      state.accessToken = action.payload.accessToken;
-      state.utente = action.payload.utente;
-      state.isAuthenticated = true;
-      localStorage.setItem(TOKEN_STORAGE_KEY, action.payload.accessToken);
-      localStorage.setItem(
-        USER_STORAGE_KEY,
-        JSON.stringify(action.payload.utente),
-      );
-    },
     logout: (state) => {
       state.accessToken = null;
       state.utente = null;
       state.isAuthenticated = false;
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-      localStorage.removeItem(USER_STORAGE_KEY);
+      cancellaSessione();
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        const { accessToken, id, nome, cognome, ruolo } = action.payload;
+        state.accessToken = accessToken;
+        state.utente = { id, nome, cognome, ruolo };
+        state.isAuthenticated = true;
+        state.status = "succeeded";
+        salvaSessione(accessToken, state.utente);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload ?? "Errore durante il login";
+      });
   },
 });
 
-export const { setCredenziali, logout } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;
