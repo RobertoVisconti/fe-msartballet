@@ -1,16 +1,17 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { store } from "./redux/store/store";
 import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
-      <header></header>
-      <main></main>
-      <footer></footer>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <header></header>
+        <main></main>
+        <footer></footer>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
