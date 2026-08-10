@@ -5,7 +5,13 @@ import heroImg from "./assets/hero.png";
 import "./App.css";
 
 function App() {
-  return <></>;
+  return (
+    <BrowserRouter>
+      <header></header>
+      <main></main>
+      <footer></footer>
+    </BrowserRouter>
+  );
 }
 
 export default App;
