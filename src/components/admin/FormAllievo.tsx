@@ -26,6 +26,27 @@ const OPZIONI_LARGHEZZA_PUNTE: LarghezzaPunte[] = [
   "WIDE",
 ];
 
+function vuotoAUndefined(valore: string | undefined): string | undefined {
+  return valore === "" ? undefined : valore;
+}
+
+function costruisciPayload(form: AggiornaAllievoDTO): AggiornaAllievoDTO {
+  return {
+    ...form,
+    numeroScarpetta: vuotoAUndefined(form.numeroScarpetta),
+    marcaScarpetta: vuotoAUndefined(form.marcaScarpetta),
+    marcaPunte: vuotoAUndefined(form.marcaPunte),
+    tagliaBody: vuotoAUndefined(form.tagliaBody),
+    tagliaCalzini: vuotoAUndefined(form.tagliaCalzini),
+    tagliaPantalone: vuotoAUndefined(form.tagliaPantalone),
+    dataScadenzaCertificato: vuotoAUndefined(form.dataScadenzaCertificato),
+    contattoEmergenzaNome: vuotoAUndefined(form.contattoEmergenzaNome),
+    contattoEmergenzaTelefono: vuotoAUndefined(form.contattoEmergenzaTelefono),
+    codiceFiscale: vuotoAUndefined(form.codiceFiscale),
+    noteSegreteria: vuotoAUndefined(form.noteSegreteria),
+  };
+}
+
 interface FormAllievoProps {
   utente: AllievoRespDTO;
   mostraCampiAdmin: boolean;
@@ -76,7 +97,10 @@ function FormAllievo({
     setInCorso(true);
     setErrore(null);
     try {
-      const aggiornato = await allievoApi.aggiorna(utente.id, form);
+      const aggiornato = await allievoApi.aggiorna(
+        utente.id,
+        costruisciPayload(form),
+      );
       onSalvato(aggiornato);
       setSalvato(true);
     } catch (err) {
