@@ -7,6 +7,10 @@ import AttivaAccount from "@/pages/auth/AttivaAccount";
 import PasswordDimenticata from "@/pages/auth/PasswordDimenticata";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import InArrivo from "@/pages/InArrivo";
+import Profilo from "@/pages/Profilo";
+import AllievoDettaglio from "@/components/admin/AllievoDettaglio";
+import AllieviList from "@/components/admin/AllieviList";
+import AdminHome from "@/components/admin/AdminHome";
 
 function AppRouter() {
   return (
@@ -38,10 +42,14 @@ function AppRouter() {
             path="/il-mio-profilo"
             element={<InArrivo titolo="Il mio profilo" />}
           />
+          <Route path="/il-mio-profilo" element={<Profilo />} />
         </Route>
 
         <Route element={<ProtectedRoute ruoliConsentiti={["ADMIN"]} />}>
           <Route path="/admin" element={<InArrivo titolo="Area Admin" />} />
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/allievi" element={<AllieviList />} />
+          <Route path="/admin/allievi/:id" element={<AllievoDettaglio />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />

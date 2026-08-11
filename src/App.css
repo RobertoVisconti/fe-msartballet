@@ -62,6 +62,38 @@
   --transition-scale: transform 0.6s ease;
 }
 
+/* Form */
+
+.form-control,
+.form-select {
+  background-color: var(--color-bg-alt);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--color-bg-alt);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+  box-shadow: 0 0 0 0.2rem rgba(209, 0, 104, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--color-text-muted);
+}
+
+.form-label {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-body-sm);
+}
+
+.table {
+  --bs-table-color: var(--color-text-primary);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--color-border);
+}
+
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -348,4 +380,142 @@
 
 .in-arrivo p {
   color: var(--color-text-secondary);
+}
+
+/* Profilo - Pagine Admin */
+
+.page-container {
+  padding: 56px clamp(24px, 4vw, 72px);
+}
+
+.page-container h1 {
+  font-size: var(--fs-h2-alt);
+  margin-bottom: 8px;
+}
+
+.page-intro {
+  color: var(--color-text-secondary);
+  margin-bottom: 32px;
+}
+
+.testo-secondario {
+  color: var(--color-text-tertiary);
+  font-size: var(--fs-body-sm);
+}
+
+/* Profilo / Allievo  Profilo + FormAllievo */
+
+.profilo-form h2,
+.cambia-password h2 {
+  font-size: var(--fs-h3-product);
+  margin: 32px 0 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.profilo-form h2:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.profilo-sola-lettura dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.profilo-sola-lettura dt {
+  color: var(--color-text-muted);
+  font-size: var(--fs-body-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.profilo-sola-lettura dd {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.btn-outline-accent {
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.btn-outline-accent:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Admin - Tabelle */
+
+.filtri-riga {
+  margin-bottom: 24px;
+  row-gap: 12px;
+}
+
+.tabella-admin {
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.tabella-admin th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.tabella-admin td {
+  border-color: var(--color-border-soft);
+  vertical-align: middle;
+}
+
+.azioni-cella {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.azioni-cella a {
+  color: var(--color-accent);
+}
+
+/* Allievo - Dettaglio */
+
+.link-indietro {
+  padding-left: 0;
+  color: var(--color-text-tertiary);
+}
+
+.dettaglio-intestazione {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.dettaglio-azioni {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Indice Admin */
+
+.admin-menu-lista {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.admin-menu-lista a {
+  color: var(--color-accent);
 }
