@@ -15,6 +15,11 @@ import InsegnantiList from "@/pages/admin/InsegnantiList";
 import InsegnanteDettaglio from "@/pages/admin/InsegnanteDettaglio";
 import OspitiList from "@/pages/admin/OspitiList";
 import OspiteDettaglio from "@/pages/admin/OspiteDettaglio";
+import Contatti from "@/pages/Contatti";
+import Home from "@/pages/Home";
+import Corsi from "@/pages/Corsi";
+import Sale from "@/pages/Sale";
+import Store from "@/pages/Store";
 
 function AppRouter() {
   return (
@@ -28,14 +33,14 @@ function AppRouter() {
 
       {/* Tutto il resto: dentro il layout con sidebar/footer */}
       <Route element={<Layout />}>
-        <Route path="/" element={<InArrivo titolo="Home" />} />
+        <Route path="/" element={<Home />} />
         <Route path="/la-scuola" element={<InArrivo titolo="La Scuola" />} />
         <Route path="/insegnanti" element={<InArrivo titolo="Insegnanti" />} />
-        <Route path="/corsi" element={<InArrivo titolo="Corsi" />} />
-        <Route path="/sale" element={<InArrivo titolo="Sale" />} />
+        <Route path="/corsi" element={<Corsi />} />
+        <Route path="/sale" element={<Sale />} />
         <Route path="/galleria" element={<InArrivo titolo="Galleria" />} />
-        <Route path="/store" element={<InArrivo titolo="Store" />} />
-        <Route path="/contatti" element={<InArrivo titolo="Contatti" />} />
+        <Route path="/store" element={<Store />} />
+        <Route path="/contatti" element={<Contatti />} />
         <Route
           path="/prenota-prova"
           element={<InArrivo titolo="Prenota una prova" />}

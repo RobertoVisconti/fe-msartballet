@@ -519,3 +519,528 @@
 .admin-menu-lista a {
   color: var(--color-accent);
 }
+
+/* Utility Immagini */
+
+.img-hover-color {
+  filter: grayscale(100%);
+  transition:
+    filter 0.5s ease,
+    transform 0.6s ease;
+}
+.img-hover-color:hover {
+  filter: grayscale(0%);
+  transform: scale(1.04);
+}
+
+/* Home - Hero */
+
+.hero-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hero-media {
+  position: relative;
+  height: 780px;
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  padding: 20px 20px 0;
+  filter: grayscale(100%);
+  transition:
+    filter 0.5s ease,
+    transform 0.5s ease;
+}
+
+.hero-media:hover .hero-img {
+  filter: grayscale(0%);
+  transform: scale(1.04);
+}
+
+.hero-badge {
+  position: absolute;
+  left: 32px;
+  bottom: 32px;
+  padding: 12px 18px;
+  border: 1px solid rgba(234, 231, 228, 0.35);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.hero-content {
+  background: var(--color-bg-alt);
+  padding: 40px clamp(32px, 5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hero-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-kicker::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+.hero-title {
+  font-size: var(--fs-h1);
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-title-light {
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.hero-title-bold {
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+}
+
+.hero-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+  max-width: 46ch;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-cta {
+  padding: 13px 20px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: background 0.25s;
+}
+
+.hero-cta:hover {
+  background: var(--color-accent-hover);
+  color: #fff;
+}
+
+.hero-link {
+  border-bottom: 1px solid rgba(234, 231, 228, 0.3);
+  padding-bottom: 4px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  transition:
+    color 0.25s,
+    border-color 0.25s;
+}
+
+.hero-link:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Home - La Scuola */
+
+.scuola-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  border-bottom: 1px solid var(--color-border);
+}
+
+.scuola-sinistra {
+  background: var(--color-bg-alt);
+  border-right: 1px solid var(--color-border);
+  padding: 88px clamp(32px, 5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tag-stagione {
+  align-self: flex-start;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scuola-sinistra h2 {
+  font-size: var(--fs-h2-alt);
+  line-height: 1.1;
+}
+
+.scuola-sinistra > p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  max-width: 48ch;
+}
+
+.scuola-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+  margin-top: 12px;
+}
+
+.stat {
+  background: var(--color-bg);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-numero {
+  font-family: var(--font-display);
+  font-size: 38px;
+  color: var(--color-accent);
+}
+
+.stat-etichetta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+}
+
+.scuola-destra {
+  background: var(--color-bg);
+  padding: 96px clamp(32px, 5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+}
+
+.scuola-virgoletta {
+  font-family: var(--font-display);
+  font-size: 92px;
+  line-height: 0.6;
+  color: var(--color-accent);
+}
+
+.scuola-citazione {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-quote);
+  line-height: 1.35;
+  color: var(--color-text-primary);
+}
+
+.scuola-didascalia {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Home - Catalogo */
+
+.catalogo-page {
+  padding: 88px clamp(32px, 5vw, 72px);
+}
+
+.catalogo-page h1 {
+  font-size: var(--fs-h2);
+  margin-bottom: 16px;
+}
+
+.catalogo-intro {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  max-width: 58ch;
+  margin-bottom: 48px;
+}
+
+/* Corsi */
+
+.corsi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+}
+
+.corso-card {
+  background: var(--color-bg);
+  padding: 34px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background 0.3s;
+}
+
+.corso-card:hover {
+  background: var(--color-accent-tint-weak);
+}
+
+.corso-numero {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-accent);
+}
+
+.corso-card h3 {
+  font-size: 26px;
+}
+
+.corso-meta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+}
+
+.corso-card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-tertiary);
+}
+
+.corso-footer {
+  margin-top: auto;
+  padding-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+}
+
+.corso-prezzo {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Sale */
+
+.sale-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 56px;
+  align-items: start;
+}
+
+.sala-card:nth-child(2n) {
+  margin-top: 140px;
+}
+
+.sala-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  margin-bottom: 22px;
+  display: block;
+}
+
+.sala-img-placeholder {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+}
+
+.sala-titolo-riga {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--color-border-soft-2);
+  padding-bottom: 12px;
+}
+
+.sala-titolo-riga h3 {
+  font-size: 30px;
+}
+
+.sala-numero {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.sala-prezzo {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--color-text-tertiary);
+  margin: 18px 0 24px;
+}
+
+.sala-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sala-affitta {
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Store */
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 28px;
+}
+
+.prodotto-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--color-bg-alt);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.prodotto-img-placeholder {
+  border: 1px solid var(--color-border);
+}
+
+.prodotto-riga {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.prodotto-riga h3 {
+  font-size: 20px;
+}
+
+.prodotto-prezzo {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.prodotto-descrizione {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  margin-top: 6px;
+}
+
+/* Contatti */
+
+.contatti-section {
+  background: var(--color-accent);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+}
+
+.contatti-sinistra {
+  padding: 88px clamp(32px, 5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contatti-sinistra h2 {
+  font-size: clamp(32px, 3.5vw, 52px);
+  color: #fff;
+}
+
+.contatti-sinistra > p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 40ch;
+}
+
+.contatti-cta {
+  align-self: flex-start;
+  background: #000;
+  color: #fff;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+
+.contatti-cta:hover {
+  background: var(--color-text-primary);
+  color: #000;
+}
+
+.contatti-destra {
+  border-left: 1px solid rgba(0, 0, 0, 0.25);
+  padding: 88px clamp(32px, 5vw, 72px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 36px 24px;
+  align-content: start;
+}
+
+.contatto-blocco {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contatto-etichetta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.contatto-valore,
+.contatto-social {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #fff;
+}
+
+.contatto-social {
+  align-self: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  transition:
+    color 0.25s,
+    border-color 0.25s;
+}
+
+.contatto-social:hover {
+  color: #000;
+  border-color: #000;
+}
