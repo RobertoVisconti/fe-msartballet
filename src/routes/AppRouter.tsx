@@ -8,9 +8,13 @@ import PasswordDimenticata from "@/pages/auth/PasswordDimenticata";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import InArrivo from "@/pages/InArrivo";
 import Profilo from "@/pages/Profilo";
-import AllievoDettaglio from "@/components/admin/AllievoDettaglio";
-import AllieviList from "@/components/admin/AllieviList";
-import AdminHome from "@/components/admin/AdminHome";
+import AllievoDettaglio from "@/pages/admin/AllievoDettaglio";
+import AllieviList from "@/pages/admin/AllieviList";
+import AdminHome from "@/pages/admin/AdminHome";
+import InsegnantiList from "@/pages/admin/InsegnantiList";
+import InsegnanteDettaglio from "@/pages/admin/InsegnanteDettaglio";
+import OspitiList from "@/pages/admin/OspitiList";
+import OspiteDettaglio from "@/pages/admin/OspiteDettaglio";
 
 function AppRouter() {
   return (
@@ -50,6 +54,13 @@ function AppRouter() {
           <Route path="/admin" element={<AdminHome />} />
           <Route path="/admin/allievi" element={<AllieviList />} />
           <Route path="/admin/allievi/:id" element={<AllievoDettaglio />} />
+          <Route path="/admin/insegnanti" element={<InsegnantiList />} />
+          <Route
+            path="/admin/insegnanti/:id"
+            element={<InsegnanteDettaglio />}
+          />
+          <Route path="/admin/ospiti" element={<OspitiList />} />
+          <Route path="/admin/ospiti/:id" element={<OspiteDettaglio />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />

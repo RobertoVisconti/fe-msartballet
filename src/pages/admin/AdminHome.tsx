@@ -8,6 +8,12 @@ function AdminHome() {
       <ul className="admin-menu-lista">
         <li>
           <Link to="/admin/allievi">Gestione Allievi</Link>
+          <li>
+            <Link to="/admin/insegnanti">Gestione Insegnanti</Link>
+          </li>
+          <li>
+            <Link to="/admin/ospiti">Gestione Ospiti (sola lettura)</Link>
+          </li>
         </li>
       </ul>
       <p className="testo-secondario">
