@@ -28,6 +28,8 @@ import ProdottiAdmin from "@/pages/admin/ProdottiAdmin";
 import SpettacoliAdmin from "@/pages/admin/SpettacoliAdmin";
 import CorsiAdmin from "@/pages/admin/CorsiAdmin";
 import MediaAdmin from "@/pages/admin/MediaAdmin";
+import Lezioni from "@/pages/Lezioni";
+import LezioniAdmin from "@/pages/admin/LezioniAdmin";
 
 function AppRouter() {
   return (
@@ -49,6 +51,7 @@ function AppRouter() {
         <Route path="/galleria" element={<Galleria />} />
         <Route path="/store" element={<Store />} />
         <Route path="/contatti" element={<Contatti />} />
+        <Route path="/lezioni" element={<Lezioni />} />
         <Route
           path="/prenota-prova"
           element={<InArrivo titolo="Prenota una prova" />}
@@ -75,6 +78,7 @@ function AppRouter() {
           <Route path="/admin/spettacoli" element={<SpettacoliAdmin />} />
           <Route path="/admin/corsi" element={<CorsiAdmin />} />
           <Route path="/admin/media" element={<MediaAdmin />} />
+          <Route path="/admin/lezioni" element={<LezioniAdmin />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />

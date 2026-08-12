@@ -1191,3 +1191,72 @@
 .galleria-img.in-hover {
   transform: scale(1.06);
 }
+
+/* Lezioni */
+
+.lezioni-filtro {
+  max-width: 320px;
+  margin-bottom: 32px;
+}
+
+.lezioni-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lezione-riga {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  flex-wrap: wrap;
+}
+
+.lezione-data {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.lezione-giorno {
+  font-family: var(--font-display);
+  font-size: 17px;
+  text-transform: capitalize;
+}
+
+.lezione-ora {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lezione-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.lezione-corso {
+  font-size: 15px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.lezione-sala {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+}
+
+.lezione-prezzo {
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 14px;
+}
