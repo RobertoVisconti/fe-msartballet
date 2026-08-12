@@ -15,6 +15,18 @@ function AdminHome() {
             <Link to="/admin/ospiti">Gestione Ospiti (sola lettura)</Link>
           </li>
         </li>
+        <li>
+          <Link to="/admin/discipline">Discipline</Link>
+        </li>
+        <li>
+          <Link to="/admin/sale">Sale</Link>
+        </li>
+        <li>
+          <Link to="/admin/prodotti">Prodotti</Link>
+        </li>
+        <li>
+          <Link to="/admin/spettacoli">Spettacoli</Link>
+        </li>
       </ul>
       <p className="testo-secondario">
         Insegnanti, Ospiti e Admin arrivano nella prossima iterazione.

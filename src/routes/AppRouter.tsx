@@ -22,6 +22,10 @@ import Sale from "@/pages/Sale";
 import Store from "@/pages/Store";
 import Insegnanti from "@/pages/Insegnanti";
 import Galleria from "@/pages/Galleria";
+import DisciplineAdmin from "@/pages/admin/DisciplineAdmin";
+import SaleAdmin from "@/pages/admin/SaleAdmin";
+import ProdottiAdmin from "@/pages/admin/ProdottiAdmin";
+import SpettacoliAdmin from "@/pages/admin/SpettacoliAdmin";
 
 function AppRouter() {
   return (
@@ -49,15 +53,10 @@ function AppRouter() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route
-            path="/il-mio-profilo"
-            element={<InArrivo titolo="Il mio profilo" />}
-          />
           <Route path="/il-mio-profilo" element={<Profilo />} />
         </Route>
 
         <Route element={<ProtectedRoute ruoliConsentiti={["ADMIN"]} />}>
-          <Route path="/admin" element={<InArrivo titolo="Area Admin" />} />
           <Route path="/admin" element={<AdminHome />} />
           <Route path="/admin/allievi" element={<AllieviList />} />
           <Route path="/admin/allievi/:id" element={<AllievoDettaglio />} />
@@ -68,6 +67,10 @@ function AppRouter() {
           />
           <Route path="/admin/ospiti" element={<OspitiList />} />
           <Route path="/admin/ospiti/:id" element={<OspiteDettaglio />} />
+          <Route path="/admin/discipline" element={<DisciplineAdmin />} />
+          <Route path="/admin/sale" element={<SaleAdmin />} />
+          <Route path="/admin/prodotti" element={<ProdottiAdmin />} />
+          <Route path="/admin/spettacoli" element={<SpettacoliAdmin />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />
