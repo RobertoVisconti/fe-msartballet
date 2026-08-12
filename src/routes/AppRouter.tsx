@@ -21,6 +21,7 @@ import Corsi from "@/pages/Corsi";
 import Sale from "@/pages/Sale";
 import Store from "@/pages/Store";
 import Insegnanti from "@/pages/Insegnanti";
+import Galleria from "@/pages/Galleria";
 
 function AppRouter() {
   return (
@@ -39,7 +40,7 @@ function AppRouter() {
         <Route path="/insegnanti" element={<Insegnanti />} />
         <Route path="/corsi" element={<Corsi />} />
         <Route path="/sale" element={<Sale />} />
-        <Route path="/galleria" element={<InArrivo titolo="Galleria" />} />
+        <Route path="/galleria" element={<Galleria />} />
         <Route path="/store" element={<Store />} />
         <Route path="/contatti" element={<Contatti />} />
         <Route
