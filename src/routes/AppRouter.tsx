@@ -31,6 +31,7 @@ import MediaAdmin from "@/pages/admin/MediaAdmin";
 import Lezioni from "@/pages/Lezioni";
 import LezioniAdmin from "@/pages/admin/LezioniAdmin";
 import IscrizioniAdmin from "@/pages/admin/IscrizioniAdmin";
+import PrenotazioniAdmin from "@/pages/admin/PrenotazioniAdmin";
 
 function AppRouter() {
   return (
@@ -81,6 +82,7 @@ function AppRouter() {
           <Route path="/admin/media" element={<MediaAdmin />} />
           <Route path="/admin/lezioni" element={<LezioniAdmin />} />
           <Route path="/admin/iscrizioni" element={<IscrizioniAdmin />} />
+          <Route path="/admin/prenotazioni" element={<PrenotazioniAdmin />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />

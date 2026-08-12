@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import type { AxiosError } from "axios";
 import { Form } from "react-bootstrap";
+import { useAppSelector } from "@/redux/store/hooks";
 import { lezioneApi } from "@/api/lezioneApi";
 import { corsoApi } from "@/api/corsoApi";
+import { prenotazioneApi } from "@/api/prenotazioneApi";
 import type { LezioneRespDTO } from "@/interfaces/lezione";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
+import type { ErrorsDTO } from "@/interfaces/common";
 
 function formattaData(iso: string): string {
   return new Date(iso).toLocaleDateString("it-IT", {
@@ -69,26 +73,87 @@ function Lezioni() {
       ) : (
         <ul className="lezioni-lista">
           {lezioni.map((lezione) => (
-            <li key={lezione.id} className="lezione-riga">
-              <div className="lezione-data">
-                <span className="lezione-giorno">
-                  {formattaData(lezione.dataOraInizio)}
-                </span>
-                <span className="lezione-ora">
-                  {formattaOra(lezione.dataOraInizio)}–
-                  {formattaOra(lezione.dataOraFine)}
-                </span>
-              </div>
-              <div className="lezione-info">
-                <span className="lezione-corso">{lezione.titoloCorso}</span>
-                <span className="lezione-sala">{lezione.titoloSala}</span>
-              </div>
-              <span className="lezione-prezzo">€ {lezione.prezzoLezione}</span>
-            </li>
+            <LezioneRiga key={lezione.id} lezione={lezione} />
           ))}
         </ul>
       )}
     </div>
+  );
+}
+
+interface LezioneRigaProps {
+  lezione: LezioneRespDTO;
+}
+
+const RUOLI_CHE_POSSONO_PRENOTARE = ["ALLIEVO", "OSPITE", "ADMIN"];
+
+function LezioneRiga({ lezione }: LezioneRigaProps) {
+  const utente = useAppSelector((state) => state.auth.utente);
+  const [inCorso, setInCorso] = useState(false);
+  const [esito, setEsito] = useState<"ok" | "errore" | null>(null);
+  const [messaggioErrore, setMessaggioErrore] = useState<string | null>(null);
+
+  async function prenota() {
+    if (!utente) return;
+    setInCorso(true);
+    setEsito(null);
+    try {
+      await prenotazioneApi.crea({
+        idUtente: utente.id,
+        idLezione: lezione.id,
+      });
+      setEsito("ok");
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      setMessaggioErrore(
+        error.response?.data?.message ?? "Prenotazione non riuscita",
+      );
+      setEsito("errore");
+    } finally {
+      setInCorso(false);
+    }
+  }
+
+  const puoPrenotare =
+    utente && RUOLI_CHE_POSSONO_PRENOTARE.includes(utente.ruolo);
+
+  return (
+    <li className="lezione-riga">
+      <div className="lezione-data">
+        <span className="lezione-giorno">
+          {formattaData(lezione.dataOraInizio)}
+        </span>
+        <span className="lezione-ora">
+          {formattaOra(lezione.dataOraInizio)}–
+          {formattaOra(lezione.dataOraFine)}
+        </span>
+      </div>
+      <div className="lezione-info">
+        <span className="lezione-corso">{lezione.titoloCorso}</span>
+        <span className="lezione-sala">{lezione.titoloSala}</span>
+      </div>
+      <span className="lezione-prezzo">€ {lezione.prezzoLezione}</span>
+
+      {puoPrenotare && (
+        <div className="lezione-prenota">
+          {esito === "ok" ? (
+            <span className="lezione-prenota-ok">Prenotata ✓</span>
+          ) : (
+            <button
+              type="button"
+              className="lezione-prenota-btn"
+              onClick={prenota}
+              disabled={inCorso}
+            >
+              {inCorso ? "Invio..." : "Prenota"}
+            </button>
+          )}
+          {esito === "errore" && (
+            <span className="lezione-prenota-errore">{messaggioErrore}</span>
+          )}
+        </div>
+      )}
+    </li>
   );
 }
 
