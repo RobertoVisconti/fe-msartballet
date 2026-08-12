@@ -1260,3 +1260,52 @@
   font-weight: 700;
   font-size: 14px;
 }
+
+/* Iscrizione */
+
+.corso-iscrizione {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.corso-iscriviti {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.corso-iscriviti:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.corso-iscriviti:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.corso-iscrizione-ok {
+  color: #7ee0a8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.corso-iscrizione-errore {
+  color: #e08a8a;
+  font-size: 12px;
+}
+
+/* Cambio stato iscrizione admin */
+
+.azioni-select-stato {
+  width: auto;
+  min-width: 150px;
+}

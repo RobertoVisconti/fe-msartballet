@@ -36,6 +36,9 @@ function AdminHome() {
         <li>
           <Link to="/admin/lezioni">Lezioni</Link>
         </li>
+        <li>
+          <Link to="/admin/iscrizioni">Iscrizioni</Link>
+        </li>
       </ul>
       <p className="testo-secondario">
         Gestione Admin (utenti con ruolo ADMIN) in sospeso — il backend non ha
