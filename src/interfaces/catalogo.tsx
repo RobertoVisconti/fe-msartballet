@@ -62,3 +62,15 @@ export interface NewProdottoDTO {
   imgProdotto?: string;
   prezzoProdotto: number;
 }
+
+export interface NewCorsoDTO {
+  titolo: string;
+  descrizione: string;
+  livelloCorso: LivelloCorso;
+  giornoSettimana: GiornoSettimana;
+  oraInizio: string;
+  oraFine: string;
+  prezzoMensile: number;
+  idDisciplina: string;
+  idInsegnante: string;
+}

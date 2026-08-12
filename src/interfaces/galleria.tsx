@@ -22,3 +22,10 @@ export interface SpettacoloDTO {
   dataEvento: string;
   luogo: string;
 }
+
+export interface NewMediaDTO {
+  url: string;
+  tipoMedia: TipoMedia;
+  titolo: string;
+  idSpettacolo: string;
+}

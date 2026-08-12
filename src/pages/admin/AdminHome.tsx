@@ -8,12 +8,12 @@ function AdminHome() {
       <ul className="admin-menu-lista">
         <li>
           <Link to="/admin/allievi">Gestione Allievi</Link>
-          <li>
-            <Link to="/admin/insegnanti">Gestione Insegnanti</Link>
-          </li>
-          <li>
-            <Link to="/admin/ospiti">Gestione Ospiti (sola lettura)</Link>
-          </li>
+        </li>
+        <li>
+          <Link to="/admin/insegnanti">Gestione Insegnanti</Link>
+        </li>
+        <li>
+          <Link to="/admin/ospiti">Gestione Ospiti (sola lettura)</Link>
         </li>
         <li>
           <Link to="/admin/discipline">Discipline</Link>
@@ -27,9 +27,16 @@ function AdminHome() {
         <li>
           <Link to="/admin/spettacoli">Spettacoli</Link>
         </li>
+        <li>
+          <Link to="/admin/corsi">Corsi</Link>
+        </li>
+        <li>
+          <Link to="/admin/media">Media</Link>
+        </li>
       </ul>
       <p className="testo-secondario">
-        Insegnanti, Ospiti e Admin arrivano nella prossima iterazione.
+        Gestione Admin (utenti con ruolo ADMIN) in sospeso — il backend non ha
+        un endpoint per elencarli.
       </p>
     </div>
   );

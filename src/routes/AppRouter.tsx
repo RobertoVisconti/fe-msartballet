@@ -26,6 +26,8 @@ import DisciplineAdmin from "@/pages/admin/DisciplineAdmin";
 import SaleAdmin from "@/pages/admin/SaleAdmin";
 import ProdottiAdmin from "@/pages/admin/ProdottiAdmin";
 import SpettacoliAdmin from "@/pages/admin/SpettacoliAdmin";
+import CorsiAdmin from "@/pages/admin/CorsiAdmin";
+import MediaAdmin from "@/pages/admin/MediaAdmin";
 
 function AppRouter() {
   return (
@@ -71,6 +73,8 @@ function AppRouter() {
           <Route path="/admin/sale" element={<SaleAdmin />} />
           <Route path="/admin/prodotti" element={<ProdottiAdmin />} />
           <Route path="/admin/spettacoli" element={<SpettacoliAdmin />} />
+          <Route path="/admin/corsi" element={<CorsiAdmin />} />
+          <Route path="/admin/media" element={<MediaAdmin />} />
         </Route>
 
         <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />
