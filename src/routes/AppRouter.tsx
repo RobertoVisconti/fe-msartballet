@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
+import AdminLayout from "@/components/admin/AdminLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "@/pages/auth/Login";
 import RegistrazioneOspite from "@/pages/auth/RegistrazioneOspite";
@@ -32,6 +33,10 @@ import Lezioni from "@/pages/Lezioni";
 import LezioniAdmin from "@/pages/admin/LezioniAdmin";
 import IscrizioniAdmin from "@/pages/admin/IscrizioniAdmin";
 import PrenotazioniAdmin from "@/pages/admin/PrenotazioniAdmin";
+import RegistrazioneAdmin from "@/pages/admin/RegistrazioneAdmin";
+import RegistraAllievo from "@/pages/admin/RegistraAllievo";
+import RegistraInsegnante from "@/pages/admin/RegistraInsegnante";
+import RegistraAdminUtente from "@/pages/admin/RegistraAdminUtente";
 
 function AppRouter() {
   return (
@@ -43,7 +48,7 @@ function AppRouter() {
       <Route path="/password-dimenticata" element={<PasswordDimenticata />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Tutto il resto: dentro il layout con sidebar/footer */}
+      {/* Sito pubblico + area personale: layout pubblico con sidebar/footer */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/la-scuola" element={<InArrivo titolo="La Scuola" />} />
@@ -63,8 +68,26 @@ function AppRouter() {
           <Route path="/il-mio-profilo" element={<Profilo />} />
         </Route>
 
-        <Route element={<ProtectedRoute ruoliConsentiti={["ADMIN"]} />}>
+        <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />
+      </Route>
+
+      {/* Area Admin: layout dedicato con sidebar propria */}
+      <Route element={<ProtectedRoute ruoliConsentiti={["ADMIN"]} />}>
+        <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/registrazione" element={<RegistrazioneAdmin />} />
+          <Route
+            path="/admin/registrazione/allievo"
+            element={<RegistraAllievo />}
+          />
+          <Route
+            path="/admin/registrazione/insegnante"
+            element={<RegistraInsegnante />}
+          />
+          <Route
+            path="/admin/registrazione/admin"
+            element={<RegistraAdminUtente />}
+          />
           <Route path="/admin/allievi" element={<AllieviList />} />
           <Route path="/admin/allievi/:id" element={<AllievoDettaglio />} />
           <Route path="/admin/insegnanti" element={<InsegnantiList />} />
@@ -84,8 +107,6 @@ function AppRouter() {
           <Route path="/admin/iscrizioni" element={<IscrizioniAdmin />} />
           <Route path="/admin/prenotazioni" element={<PrenotazioniAdmin />} />
         </Route>
-
-        <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />
       </Route>
     </Routes>
   );

@@ -1,3 +1,5 @@
+import type { LarghezzaPunte } from "./utente";
+
 export type RuoloUtente =
   | "ADMIN"
   | "UTENTE"
@@ -38,6 +40,45 @@ export interface OspiteRegistrazioneDTO {
   cognome: string;
   email: string;
   dataDiNascita: string;
+}
+
+export interface NewAllievoDTO {
+  nome: string;
+  cognome: string;
+  email: string;
+  dataDiNascita: string;
+  imgProfilo?: string;
+  numeroScarpetta?: string;
+  marcaScarpetta?: string;
+  haPunte?: boolean;
+  marcaPunte?: string;
+  larghezzaPunte?: LarghezzaPunte;
+  tagliaBody?: string;
+  tagliaCalzini?: string;
+  altezzaCm?: number;
+  tagliaPantalone?: string;
+  dataScadenzaCertificato?: string;
+  contattoEmergenzaNome?: string;
+  contattoEmergenzaTelefono?: string;
+  codiceFiscale?: string;
+  consensoPrivacyFoto?: boolean;
+}
+
+export interface NewInsegnanteDTO {
+  nome: string;
+  cognome: string;
+  email: string;
+  dataDiNascita: string;
+  imgProfilo?: string;
+  biografia: string;
+}
+
+export interface NewAdminDTO {
+  nome: string;
+  cognome: string;
+  email: string;
+  dataDiNascita: string;
+  imgProfilo?: string;
 }
 
 export interface OspiteRespDTO {

@@ -201,6 +201,7 @@
     align-self: flex-start;
     border-right: 1px solid var(--color-border);
     padding: 20px 0 24px;
+    overflow-y: auto;
   }
 }
 
@@ -529,17 +530,50 @@
 
 /* Indice Admin */
 
-.admin-menu-lista {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 16px 0;
+.registrazione-scelta {
+  padding: 56px clamp(24px, 4vw, 72px);
 }
 
-.admin-menu-lista a {
+.registrazione-scelta h1 {
+  font-size: var(--fs-h2-alt);
+  margin-bottom: 8px;
+}
+
+.registrazione-griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.registrazione-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  transition: var(--transition-ui);
+}
+
+.registrazione-card svg {
   color: var(--color-accent);
+}
+
+.registrazione-card h2 {
+  font-size: var(--fs-h3-product);
+  margin: 0;
+}
+
+.registrazione-card p {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-body-sm);
+  margin: 0;
+}
+
+.registrazione-card:hover {
+  background: var(--color-accent-tint-weak);
+  border-color: var(--color-accent);
 }
 
 /* Utility Immagini */

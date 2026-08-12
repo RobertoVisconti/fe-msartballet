@@ -7,7 +7,16 @@ import type {
   AttivazioneAccountDTO,
   RichiestaResetPasswordDTO,
   ResetPasswordDTO,
+  NewAllievoDTO,
+  NewInsegnanteDTO,
+  NewAdminDTO,
 } from "@/interfaces/auth";
+
+import type {
+  AllievoRespDTO,
+  InsegnanteRespDTO,
+  AdminRespDTO,
+} from "@/interfaces/utente";
 
 export const authApi = {
   login: (dto: LoginDTO) =>
@@ -18,6 +27,21 @@ export const authApi = {
   registraOspite: (dto: OspiteRegistrazioneDTO) =>
     axiosInstance
       .post<OspiteRespDTO>("/auth/register/ospite", dto)
+      .then((res) => res.data),
+
+  creaAllievo: (dto: NewAllievoDTO) =>
+    axiosInstance
+      .post<AllievoRespDTO>("/auth/admin/allievi", dto)
+      .then((res) => res.data),
+
+  creaInsegnante: (dto: NewInsegnanteDTO) =>
+    axiosInstance
+      .post<InsegnanteRespDTO>("/auth/admin/insegnanti", dto)
+      .then((res) => res.data),
+
+  creaAdmin: (dto: NewAdminDTO) =>
+    axiosInstance
+      .post<AdminRespDTO>("/auth/admin/admins", dto)
       .then((res) => res.data),
 
   attivaAccount: (dto: AttivazioneAccountDTO) =>
