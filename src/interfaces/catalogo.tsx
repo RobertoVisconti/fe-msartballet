@@ -44,3 +44,21 @@ export interface ProdottoRespDTO {
   imgProdotto: string;
   prezzoProdotto: number;
 }
+
+export interface NewDisciplinaDTO {
+  nome: string;
+  descrizione?: string;
+}
+
+export interface SalaDTO {
+  titolo: string;
+  imgSala: string;
+  prezzoAffitto: number;
+}
+
+export interface NewProdottoDTO {
+  titolo: string;
+  descrizioneProdotto?: string;
+  imgProdotto?: string;
+  prezzoProdotto: number;
+}

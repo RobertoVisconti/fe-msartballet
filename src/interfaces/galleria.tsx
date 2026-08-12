@@ -15,3 +15,10 @@ export interface MediaRespDTO {
   titolo: string;
   idSpettacolo: string;
 }
+
+export interface SpettacoloDTO {
+  titolo: string;
+  descrizione?: string;
+  dataEvento: string;
+  luogo: string;
+}
