@@ -3,6 +3,7 @@ import type { Page } from "@/interfaces/common";
 import type {
   InsegnanteRespDTO,
   AggiornaInsegnanteDTO,
+  InsegnantePubblicoRespDTO,
 } from "@/interfaces/utente";
 
 export interface FiltriInsegnanti {
@@ -14,6 +15,13 @@ export const insegnanteApi = {
   lista: (filtri: FiltriInsegnanti) =>
     axiosInstance
       .get<Page<InsegnanteRespDTO>>("/utenti/insegnanti", { params: filtri })
+      .then((res) => res.data),
+
+  listaPubblica: (filtri: FiltriInsegnanti) =>
+    axiosInstance
+      .get<
+        Page<InsegnantePubblicoRespDTO>
+      >("/utenti/insegnanti/pubblico", { params: filtri })
       .then((res) => res.data),
 
   ottieni: (id: string) =>

@@ -122,3 +122,11 @@ export interface CambiaPasswordDTO {
 export interface ImmagineRespDTO {
   url: string;
 }
+
+export interface InsegnantePubblicoRespDTO {
+  id: string;
+  nome: string;
+  cognome: string;
+  imgProfilo: string | null;
+  biografia: string;
+}

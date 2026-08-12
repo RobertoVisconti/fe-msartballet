@@ -20,6 +20,7 @@ import Home from "@/pages/Home";
 import Corsi from "@/pages/Corsi";
 import Sale from "@/pages/Sale";
 import Store from "@/pages/Store";
+import Insegnanti from "@/pages/Insegnanti";
 
 function AppRouter() {
   return (
@@ -35,7 +36,7 @@ function AppRouter() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/la-scuola" element={<InArrivo titolo="La Scuola" />} />
-        <Route path="/insegnanti" element={<InArrivo titolo="Insegnanti" />} />
+        <Route path="/insegnanti" element={<Insegnanti />} />
         <Route path="/corsi" element={<Corsi />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/galleria" element={<InArrivo titolo="Galleria" />} />
