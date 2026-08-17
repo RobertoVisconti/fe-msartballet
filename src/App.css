@@ -1388,6 +1388,38 @@
   text-align: right;
 }
 
+.lezione-form-ospite {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+}
+
+.lezione-form-ospite .form-control {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.lezione-form-ospite-azioni {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.lezione-prenota-annulla {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.lezione-prenota-annulla:hover {
+  color: var(--color-text-primary);
+}
+
 /* Carica Immagine */
 
 .carica-immagine-anteprima {

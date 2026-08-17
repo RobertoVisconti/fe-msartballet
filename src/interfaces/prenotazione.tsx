@@ -18,6 +18,14 @@ export interface NewPrenotazioneDTO {
   idLezione: string;
 }
 
+export interface NewPrenotazioneOspiteDTO {
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono?: string;
+  idLezione: string;
+}
+
 export interface CambiaStatoPrenotazioneDTO {
   statoPrenotazione: StatoPrenotazione;
 }

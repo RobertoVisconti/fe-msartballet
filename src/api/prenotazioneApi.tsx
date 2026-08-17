@@ -3,6 +3,7 @@ import type { Page } from "@/interfaces/common";
 import type {
   PrenotazioneRespDTO,
   NewPrenotazioneDTO,
+  NewPrenotazioneOspiteDTO,
   CambiaStatoPrenotazioneDTO,
 } from "@/interfaces/prenotazione";
 
@@ -18,6 +19,11 @@ export const prenotazioneApi = {
   crea: (dto: NewPrenotazioneDTO) =>
     axiosInstance
       .post<PrenotazioneRespDTO>("/prenotazioni", dto)
+      .then((res) => res.data),
+
+  creaOspite: (dto: NewPrenotazioneOspiteDTO) =>
+    axiosInstance
+      .post<PrenotazioneRespDTO>("/prenotazioni/ospite", dto)
       .then((res) => res.data),
 
   lista: (filtri: FiltriPrenotazioni) =>

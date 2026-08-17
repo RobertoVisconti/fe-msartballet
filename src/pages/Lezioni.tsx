@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import type { AxiosError } from "axios";
 import { Form } from "react-bootstrap";
 import { useAppSelector } from "@/redux/store/hooks";
@@ -92,6 +93,13 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
   const [inCorso, setInCorso] = useState(false);
   const [esito, setEsito] = useState<"ok" | "errore" | null>(null);
   const [messaggioErrore, setMessaggioErrore] = useState<string | null>(null);
+  const [formOspiteAperto, setFormOspiteAperto] = useState(false);
+  const [formOspite, setFormOspite] = useState({
+    nome: "",
+    cognome: "",
+    email: "",
+    telefono: "",
+  });
 
   async function prenota() {
     if (!utente) return;
@@ -114,7 +122,32 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
     }
   }
 
-  const puoPrenotare =
+  async function prenotaComeOspite(evento: FormEvent) {
+    evento.preventDefault();
+    setInCorso(true);
+    setEsito(null);
+    try {
+      await prenotazioneApi.creaOspite({
+        nome: formOspite.nome,
+        cognome: formOspite.cognome,
+        email: formOspite.email,
+        telefono: formOspite.telefono || undefined,
+        idLezione: lezione.id,
+      });
+      setEsito("ok");
+      setFormOspiteAperto(false);
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      setMessaggioErrore(
+        error.response?.data?.message ?? "Prenotazione non riuscita",
+      );
+      setEsito("errore");
+    } finally {
+      setInCorso(false);
+    }
+  }
+
+  const puoPrenotareSubito =
     utente && RUOLI_CHE_POSSONO_PRENOTARE.includes(utente.ruolo);
 
   return (
@@ -134,25 +167,96 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
       </div>
       <span className="lezione-prezzo">€ {lezione.prezzoLezione}</span>
 
-      {puoPrenotare && (
+      {esito === "ok" ? (
+        <span className="lezione-prenota-ok">Prenotata ✓</span>
+      ) : puoPrenotareSubito ? (
         <div className="lezione-prenota">
-          {esito === "ok" ? (
-            <span className="lezione-prenota-ok">Prenotata ✓</span>
-          ) : (
-            <button
-              type="button"
-              className="lezione-prenota-btn"
-              onClick={prenota}
-              disabled={inCorso}
-            >
-              {inCorso ? "Invio..." : "Prenota"}
-            </button>
-          )}
+          <button
+            type="button"
+            className="lezione-prenota-btn"
+            onClick={prenota}
+            disabled={inCorso}
+          >
+            {inCorso ? "Invio..." : "Prenota"}
+          </button>
           {esito === "errore" && (
             <span className="lezione-prenota-errore">{messaggioErrore}</span>
           )}
         </div>
-      )}
+      ) : !utente ? (
+        <div className="lezione-prenota">
+          {!formOspiteAperto ? (
+            <button
+              type="button"
+              className="lezione-prenota-btn"
+              onClick={() => setFormOspiteAperto(true)}
+            >
+              Prenota
+            </button>
+          ) : (
+            <Form onSubmit={prenotaComeOspite} className="lezione-form-ospite">
+              <Form.Control
+                size="sm"
+                placeholder="Nome"
+                value={formOspite.nome}
+                onChange={(e) =>
+                  setFormOspite((p) => ({ ...p, nome: e.target.value }))
+                }
+                required
+              />
+              <Form.Control
+                size="sm"
+                placeholder="Cognome"
+                value={formOspite.cognome}
+                onChange={(e) =>
+                  setFormOspite((p) => ({ ...p, cognome: e.target.value }))
+                }
+                required
+              />
+              <Form.Control
+                size="sm"
+                type="email"
+                placeholder="Email"
+                value={formOspite.email}
+                onChange={(e) =>
+                  setFormOspite((p) => ({ ...p, email: e.target.value }))
+                }
+                required
+              />
+              <Form.Control
+                size="sm"
+                type="tel"
+                placeholder="Telefono (facoltativo)"
+                value={formOspite.telefono}
+                onChange={(e) =>
+                  setFormOspite((p) => ({ ...p, telefono: e.target.value }))
+                }
+              />
+              <div className="lezione-form-ospite-azioni">
+                <button
+                  type="submit"
+                  className="lezione-prenota-btn"
+                  disabled={inCorso}
+                >
+                  {inCorso ? "Invio..." : "Conferma"}
+                </button>
+                <button
+                  type="button"
+                  className="lezione-prenota-annulla"
+                  onClick={() => setFormOspiteAperto(false)}
+                >
+                  Annulla
+                </button>
+              </div>
+              {esito === "errore" && (
+                <span className="lezione-prenota-errore">
+                  {messaggioErrore}
+                </span>
+              )}
+            </Form>
+          )}
+        </div>
+      ) : null}
     </li>
   );
 }
