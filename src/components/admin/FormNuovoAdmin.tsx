@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { authApi } from "@/api/authApi";
+import CaricaImmagine from "./CaricaImmagine";
 import type { NewAdminDTO } from "@/interfaces/auth";
 import type { AdminRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -101,16 +102,11 @@ function FormNuovoAdmin() {
           </Form.Group>
         </Col>
         <Col md={12}>
-          <Form.Group className="mb-3">
-            <Form.Label>URL immagine profilo</Form.Label>
-            <Form.Control
-              value={form.imgProfilo}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, imgProfilo: e.target.value }))
-              }
-              placeholder="https://..."
-            />
-          </Form.Group>
+          <CaricaImmagine
+            value={form.imgProfilo}
+            onCaricata={(url) => setForm((p) => ({ ...p, imgProfilo: url }))}
+            etichetta="Immagine profilo"
+          />
         </Col>
       </Row>
 

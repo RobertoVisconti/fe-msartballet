@@ -4,6 +4,7 @@ import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { authApi } from "@/api/authApi";
+import CaricaImmagine from "./CaricaImmagine";
 import type { NewInsegnanteDTO } from "@/interfaces/auth";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -104,17 +105,13 @@ function FormNuovoInsegnante() {
           </Form.Group>
         </Col>
         <Col md={12}>
-          <Form.Group className="mb-3">
-            <Form.Label>URL immagine profilo</Form.Label>
-            <Form.Control
-              value={form.imgProfilo}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, imgProfilo: e.target.value }))
-              }
-              placeholder="https://..."
-            />
-          </Form.Group>
+          <CaricaImmagine
+            value={form.imgProfilo}
+            onCaricata={(url) => setForm((p) => ({ ...p, imgProfilo: url }))}
+            etichetta="Immagine profilo"
+          />
         </Col>
+
         <Col md={12}>
           <Form.Group className="mb-3">
             <Form.Label>Biografia</Form.Label>

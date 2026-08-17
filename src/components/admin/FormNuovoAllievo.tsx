@@ -4,6 +4,7 @@ import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { authApi } from "@/api/authApi";
+import CaricaImmagine from "./CaricaImmagine";
 import type { NewAllievoDTO } from "@/interfaces/auth";
 import type { AllievoRespDTO, LarghezzaPunte } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -153,14 +154,11 @@ function FormNuovoAllievo() {
           </Form.Group>
         </Col>
         <Col md={12}>
-          <Form.Group className="mb-3">
-            <Form.Label>URL immagine profilo</Form.Label>
-            <Form.Control
-              value={form.imgProfilo}
-              onChange={(e) => aggiorna("imgProfilo", e.target.value)}
-              placeholder="https://..."
-            />
-          </Form.Group>
+          <CaricaImmagine
+            value={form.imgProfilo}
+            onCaricata={(url) => aggiorna("imgProfilo", url)}
+            etichetta="Immagine profilo"
+          />
         </Col>
       </Row>
 

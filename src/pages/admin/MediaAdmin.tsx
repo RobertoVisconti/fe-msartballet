@@ -12,6 +12,7 @@ import {
 import type { AxiosError } from "axios";
 import { mediaApi } from "@/api/mediaApi";
 import { spettacoloApi } from "@/api/spettacoloApi";
+import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import type {
   MediaRespDTO,
   NewMediaDTO,
@@ -191,17 +192,14 @@ function MediaAdmin() {
                 required
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>URL</Form.Label>
-              <Form.Control
-                value={form.url}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, url: e.target.value }))
-                }
-                placeholder="https://..."
-                required
-              />
-            </Form.Group>
+            <CaricaImmagine
+              value={form.url}
+              onCaricata={(url) => setForm((p) => ({ ...p, url }))}
+              etichetta="File (foto o video)"
+              accept="image/*,video/*"
+              mostraAnteprima={form.tipoMedia === "FOTO"}
+              richiesta
+            />
             <Form.Group className="mb-3">
               <Form.Label>Tipo</Form.Label>
               <Form.Select

@@ -13,8 +13,11 @@ import type { AxiosError } from "axios";
 import { utenteApi } from "@/api/utenteApi";
 import FormAllievo from "@/components/admin/FormAllievo";
 import FormInsegnante from "@/components/admin/FormInsegnante";
+import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import type {
   UtenteMe,
+  AllievoRespDTO,
+  InsegnanteRespDTO,
   OspiteRespDTO,
   AdminRespDTO,
   CambiaPasswordDTO,
@@ -59,10 +62,26 @@ function Profilo() {
       </p>
 
       {utente.ruolo === "ALLIEVO" && (
+        <FotoProfilo
+          utente={utente}
+          onCaricata={(imgProfilo) =>
+            setUtente((p) => (p ? { ...p, imgProfilo } : p))
+          }
+        />
+      )}
+      {utente.ruolo === "ALLIEVO" && (
         <FormAllievo
           utente={utente}
           mostraCampiAdmin={false}
           onSalvato={setUtente}
+        />
+      )}
+      {utente.ruolo === "INSEGNANTE" && (
+        <FotoProfilo
+          utente={utente}
+          onCaricata={(imgProfilo) =>
+            setUtente((p) => (p ? { ...p, imgProfilo } : p))
+          }
         />
       )}
       {utente.ruolo === "INSEGNANTE" && (
@@ -74,6 +93,22 @@ function Profilo() {
 
       <CambiaPassword />
     </Container>
+  );
+}
+
+interface FotoProfiloProps {
+  utente: AllievoRespDTO | InsegnanteRespDTO;
+  onCaricata: (url: string) => void;
+}
+
+function FotoProfilo({ utente, onCaricata }: FotoProfiloProps) {
+  return (
+    <CaricaImmagine
+      value={utente.imgProfilo ?? undefined}
+      onCaricata={onCaricata}
+      etichetta="Foto profilo"
+      carica={(file) => utenteApi.caricaImgProfilo(file).then((r) => r.url)}
+    />
   );
 }
 

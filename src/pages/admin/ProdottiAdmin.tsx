@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { prodottoApi } from "@/api/prodottoApi";
+import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import type { ProdottoRespDTO, NewProdottoDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -175,16 +176,11 @@ function ProdottiAdmin() {
                 }
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>URL immagine</Form.Label>
-              <Form.Control
-                value={form.imgProdotto}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, imgProdotto: e.target.value }))
-                }
-                placeholder="https://..."
-              />
-            </Form.Group>
+            <CaricaImmagine
+              value={form.imgProdotto}
+              onCaricata={(url) => setForm((p) => ({ ...p, imgProdotto: url }))}
+              etichetta="Immagine prodotto"
+            />
             <Form.Group className="mb-3">
               <Form.Label>Prezzo (€)</Form.Label>
               <Form.Control

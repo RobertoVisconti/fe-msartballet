@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { salaApi } from "@/api/salaApi";
+import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import type { SalaRespDTO, SalaDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -154,16 +155,12 @@ function SaleAdmin() {
                 required
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>URL immagine</Form.Label>
-              <Form.Control
-                value={form.imgSala}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, imgSala: e.target.value }))
-                }
-                placeholder="https://..."
-              />
-            </Form.Group>
+            <CaricaImmagine
+              value={form.imgSala}
+              onCaricata={(url) => setForm((p) => ({ ...p, imgSala: url }))}
+              etichetta="Immagine sala"
+              richiesta
+            />
             <Form.Group className="mb-3">
               <Form.Label>Prezzo affitto (€)</Form.Label>
               <Form.Control
