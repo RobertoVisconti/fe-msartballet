@@ -6,19 +6,26 @@ import {
   Row,
   Col,
   Badge,
-  Spinner,
   Button,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { prenotazioneApi } from "@/api/prenotazioneApi";
 import { lezioneApi } from "@/api/lezioneApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import Paginazione from "@/components/common/Paginazione";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+} from "@/components/common/StatiLista";
 import type {
   PrenotazioneRespDTO,
   StatoPrenotazione,
 } from "@/interfaces/prenotazione";
 import type { LezioneRespDTO } from "@/interfaces/lezione";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
+
+const DIMENSIONE_PAGINA = 20;
 
 const STATI: StatoPrenotazione[] = [
   "IN_ATTESA",
@@ -35,11 +42,14 @@ const BADGE_STATO: Record<StatoPrenotazione, string> = {
 };
 
 function PrenotazioniAdmin() {
-  const [prenotazioni, setPrenotazioni] = useState<PrenotazioneRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<PrenotazioneRespDTO> | null>(null);
+  const [numeroPagina, setNumeroPagina] = useState(0);
   const [lezioni, setLezioni] = useState<LezioneRespDTO[]>([]);
   const [filtroLezione, setFiltroLezione] = useState("");
   const [filtroStato, setFiltroStato] = useState("");
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
   const notifica = useNotifica();
 
   useEffect(() => {
@@ -54,17 +64,24 @@ function PrenotazioniAdmin() {
       .lista({
         idLezione: filtroLezione || undefined,
         stato: filtroStato || undefined,
-        size: 100,
+        page: numeroPagina,
+        size: DIMENSIONE_PAGINA,
       })
-      .then((pagina) => setPrenotazioni(pagina.content))
-      .catch(() => notifica("Impossibile caricare le prenotazioni", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare le prenotazioni", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaLista();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtroLezione, filtroStato]);
+  }, [filtroLezione, filtroStato, numeroPagina, tentativo]);
 
   async function cambiaStato(
     prenotazione: PrenotazioneRespDTO,
@@ -74,8 +91,15 @@ function PrenotazioniAdmin() {
       const aggiornata = await prenotazioneApi.cambiaStato(prenotazione.id, {
         statoPrenotazione: nuovoStato,
       });
-      setPrenotazioni((precedente) =>
-        precedente.map((p) => (p.id === aggiornata.id ? aggiornata : p)),
+      setPagina((precedente) =>
+        precedente
+          ? {
+              ...precedente,
+              content: precedente.content.map((p) =>
+                p.id === aggiornata.id ? aggiornata : p,
+              ),
+            }
+          : precedente,
       );
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
@@ -95,7 +119,11 @@ function PrenotazioniAdmin() {
       return;
     try {
       await prenotazioneApi.elimina(prenotazione.id);
-      caricaLista();
+      if (pagina && pagina.numberOfElements === 1 && !pagina.first) {
+        setNumeroPagina((n) => n - 1);
+      } else {
+        caricaLista();
+      }
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
@@ -111,6 +139,8 @@ function PrenotazioniAdmin() {
     return `${lezione.titoloCorso} — ${new Date(lezione.dataOraInizio).toLocaleString("it-IT")}`;
   }
 
+  const filtriAttivi = filtroLezione !== "" || filtroStato !== "";
+
   return (
     <Container className="page-container">
       <h1>Prenotazioni</h1>
@@ -119,7 +149,10 @@ function PrenotazioniAdmin() {
         <Col md={6}>
           <Form.Select
             value={filtroLezione}
-            onChange={(e) => setFiltroLezione(e.target.value)}
+            onChange={(e) => {
+              setNumeroPagina(0);
+              setFiltroLezione(e.target.value);
+            }}
           >
             <option value="">Tutte le lezioni</option>
             {lezioni.map((l) => (
@@ -133,7 +166,10 @@ function PrenotazioniAdmin() {
         <Col md={6}>
           <Form.Select
             value={filtroStato}
-            onChange={(e) => setFiltroStato(e.target.value)}
+            onChange={(e) => {
+              setNumeroPagina(0);
+              setFiltroStato(e.target.value);
+            }}
           >
             <option value="">Tutti gli stati</option>
             {STATI.map((s) => (
@@ -146,63 +182,80 @@ function PrenotazioniAdmin() {
       </Row>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento prenotazioni..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare le prenotazioni."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto
+          testo={
+            filtriAttivi
+              ? "Nessuna prenotazione corrisponde ai filtri impostati."
+              : "Nessuna prenotazione registrata."
+          }
+        />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Utente</th>
-              <th>Lezione</th>
-              <th>Data prenotazione</th>
-              <th>Stato</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prenotazioni.map((prenotazione) => (
-              <tr key={prenotazione.id}>
-                <td>{prenotazione.nomeUtente}</td>
-                <td>{etichettaLezione(prenotazione.idLezione)}</td>
-                <td>
-                  {new Date(prenotazione.dataPrenotazione).toLocaleDateString(
-                    "it-IT",
-                  )}
-                </td>
-                <td>
-                  <Badge bg={BADGE_STATO[prenotazione.statoPrenotazione]}>
-                    {prenotazione.statoPrenotazione}
-                  </Badge>
-                </td>
-                <td className="azioni-cella">
-                  <Form.Select
-                    size="sm"
-                    className="azioni-select-stato"
-                    value={prenotazione.statoPrenotazione}
-                    onChange={(e) =>
-                      cambiaStato(
-                        prenotazione,
-                        e.target.value as StatoPrenotazione,
-                      )
-                    }
-                  >
-                    {STATI.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(prenotazione)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Utente</th>
+                <th>Lezione</th>
+                <th>Data prenotazione</th>
+                <th>Stato</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((prenotazione) => (
+                <tr key={prenotazione.id}>
+                  <td>{prenotazione.nomeUtente}</td>
+                  <td>{etichettaLezione(prenotazione.idLezione)}</td>
+                  <td>
+                    {new Date(prenotazione.dataPrenotazione).toLocaleDateString(
+                      "it-IT",
+                    )}
+                  </td>
+                  <td>
+                    <Badge bg={BADGE_STATO[prenotazione.statoPrenotazione]}>
+                      {prenotazione.statoPrenotazione}
+                    </Badge>
+                  </td>
+                  <td className="azioni-cella">
+                    <Form.Select
+                      size="sm"
+                      className="azioni-select-stato"
+                      value={prenotazione.statoPrenotazione}
+                      onChange={(e) =>
+                        cambiaStato(
+                          prenotazione,
+                          e.target.value as StatoPrenotazione,
+                        )
+                      }
+                    >
+                      {STATI.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(prenotazione)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
+        </>
       )}
     </Container>
   );

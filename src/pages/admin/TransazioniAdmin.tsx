@@ -6,7 +6,6 @@ import {
   Button,
   Modal,
   Form,
-  Spinner,
   Row,
   Col,
 } from "react-bootstrap";
@@ -18,6 +17,12 @@ import { prodottoApi } from "@/api/prodottoApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import Paginazione from "@/components/common/Paginazione";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+} from "@/components/common/StatiLista";
 import type {
   TransazioneRespDTO,
   NewTransazioneDTO,
@@ -27,7 +32,9 @@ import type {
   CorsoRespDTO,
   SalaRespDTO,
 } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
+
+const DIMENSIONE_PAGINA = 20;
 
 type TipoAcquisto = "PRODOTTO" | "CORSO" | "SALA";
 
@@ -44,22 +51,27 @@ const formVuoto = {
 };
 
 function TransazioniAdmin() {
-  const [transazioni, setTransazioni] = useState<TransazioneRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<TransazioneRespDTO> | null>(null);
+  const [numeroPagina, setNumeroPagina] = useState(0);
+  const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
+
   const [utenti, setUtenti] = useState<UtenteAcquirente[]>([]);
   const [prodotti, setProdotti] = useState<ProdottoRespDTO[]>([]);
   const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
-  const [caricamento, setCaricamento] = useState(true);
+  const [riferimentiCaricati, setRiferimentiCaricati] = useState(false);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [form, setForm] = useState(formVuoto);
   const [inCorso, setInCorso] = useState(false);
   const notifica = useNotifica();
 
-  function caricaTutto() {
-    setCaricamento(true);
+  // Dati per le select del modale: cambiano raramente, si caricano una
+  // sola volta e non seguono la paginazione della tabella.
+  useEffect(() => {
     Promise.all([
-      transazioneApi.lista({ size: 100 }),
       allievoApi.lista({ size: 100 }),
       ospiteApi.lista({ size: 100 }),
       prodottoApi.lista({ size: 100 }),
@@ -68,14 +80,12 @@ function TransazioniAdmin() {
     ])
       .then(
         ([
-          paginaTransazioni,
           paginaAllievi,
           paginaOspiti,
           paginaProdotti,
           paginaCorsi,
           paginaSale,
         ]) => {
-          setTransazioni(paginaTransazioni.content);
           const allieviEtichettati = paginaAllievi.content.map((a) => ({
             id: a.id,
             etichetta: `${a.nome} ${a.cognome} (Allievo)`,
@@ -90,13 +100,31 @@ function TransazioniAdmin() {
           setSale(paginaSale.content);
         },
       )
-      .catch(() => notifica("Impossibile caricare i dati", "errore"))
+      .catch(() =>
+        notifica("Impossibile caricare i dati di riferimento", "errore"),
+      )
+      .finally(() => setRiferimentiCaricati(true));
+  }, []);
+
+  function caricaTransazioni() {
+    setCaricamento(true);
+    transazioneApi
+      .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare le transazioni", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
-    caricaTutto();
-  }, []);
+    caricaTransazioni();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numeroPagina, tentativo]);
 
   function apriCreazione() {
     setForm(formVuoto);
@@ -117,7 +145,7 @@ function TransazioniAdmin() {
       };
       await transazioneApi.crea(dto);
       setModaleAperto(false);
-      caricaTutto();
+      caricaTransazioni();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
@@ -133,7 +161,11 @@ function TransazioniAdmin() {
     if (!window.confirm("Eliminare questa transazione?")) return;
     try {
       await transazioneApi.elimina(transazione.id);
-      caricaTutto();
+      if (pagina && pagina.numberOfElements === 1 && !pagina.first) {
+        setNumeroPagina((n) => n - 1);
+      } else {
+        caricaTransazioni();
+      }
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
@@ -172,50 +204,65 @@ function TransazioniAdmin() {
     <Container className="page-container">
       <div className="dettaglio-intestazione">
         <h1>Transazioni</h1>
-        <Button className="btn-accent" onClick={apriCreazione}>
+        <Button
+          className="btn-accent"
+          onClick={apriCreazione}
+          disabled={!riferimentiCaricati}
+        >
           + Nuova transazione
         </Button>
       </div>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento transazioni..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare le transazioni."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessuna transazione registrata." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Utente</th>
-              <th>Acquisto</th>
-              <th>Importo</th>
-              <th>Metodo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transazioni.map((transazione) => (
-              <tr key={transazione.id}>
-                <td>
-                  {new Date(transazione.dataTransazione).toLocaleString(
-                    "it-IT",
-                  )}
-                </td>
-                <td>{etichettaUtente(transazione.idUtente)}</td>
-                <td>{etichettaAcquisto(transazione)}</td>
-                <td>€ {transazione.importo}</td>
-                <td>{transazione.metodoPagamento}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(transazione)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Utente</th>
+                <th>Acquisto</th>
+                <th>Importo</th>
+                <th>Metodo</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((transazione) => (
+                <tr key={transazione.id}>
+                  <td>
+                    {new Date(transazione.dataTransazione).toLocaleString(
+                      "it-IT",
+                    )}
+                  </td>
+                  <td>{etichettaUtente(transazione.idUtente)}</td>
+                  <td>{etichettaAcquisto(transazione)}</td>
+                  <td>€ {transazione.importo}</td>
+                  <td>{transazione.metodoPagamento}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(transazione)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>
