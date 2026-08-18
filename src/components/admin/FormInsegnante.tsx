@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Form, Button, Alert, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
 import type {
@@ -8,6 +8,7 @@ import type {
   AggiornaInsegnanteDTO,
 } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { useNotifica } from "@/components/common/ToastProvider";
 
 interface FormInsegnanteProps {
   utente: InsegnanteRespDTO;
@@ -23,20 +24,22 @@ function FormInsegnante({ utente, onSalvato }: FormInsegnanteProps) {
     biografia: utente.biografia,
   });
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
-  const [salvato, setSalvato] = useState(false);
+  const notifica = useNotifica();
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
+
     try {
       const aggiornato = await insegnanteApi.aggiorna(utente.id, form);
       onSalvato(aggiornato);
-      setSalvato(true);
+      notifica("Salvato", "successo");
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Salvataggio non riuscito");
+      notifica(
+        error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -44,9 +47,6 @@ function FormInsegnante({ utente, onSalvato }: FormInsegnanteProps) {
 
   return (
     <Form onSubmit={handleSubmit} className="profilo-form">
-      {errore && <Alert variant="danger">{errore}</Alert>}
-      {salvato && <Alert variant="success">Salvato</Alert>}
-
       <h2>Dati anagrafici</h2>
       <Row>
         <Col md={6}>

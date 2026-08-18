@@ -4,6 +4,7 @@ import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { authApi } from "@/api/authApi";
 import CaricaImmagine from "./CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewAdminDTO } from "@/interfaces/auth";
 import type { AdminRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -19,13 +20,12 @@ const FORM_VUOTO: NewAdminDTO = {
 function FormNuovoAdmin() {
   const [form, setForm] = useState<NewAdminDTO>(FORM_VUOTO);
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [creato, setCreato] = useState<AdminRespDTO | null>(null);
+  const notifica = useNotifica();
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     setCreato(null);
     try {
       const payload = { ...form, imgProfilo: form.imgProfilo || undefined };
@@ -34,7 +34,10 @@ function FormNuovoAdmin() {
       setForm(FORM_VUOTO);
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Registrazione non riuscita");
+      notifica(
+        error.response?.data?.message ?? "Registrazione non riuscita",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -42,7 +45,6 @@ function FormNuovoAdmin() {
 
   return (
     <Form onSubmit={handleSubmit} className="profilo-form">
-      {errore && <Alert variant="danger">{errore}</Alert>}
       {creato && (
         <Alert variant="success">
           {creato.nome} {creato.cognome} registrato/a come Admin — email di

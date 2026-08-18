@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Form, Button, Alert, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
 import type {
@@ -9,6 +9,7 @@ import type {
   LarghezzaPunte,
 } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { useNotifica } from "@/components/common/ToastProvider";
 
 const OPZIONI_LARGHEZZA_PUNTE: LarghezzaPunte[] = [
   "A",
@@ -81,31 +82,31 @@ function FormAllievo({
     noteSegreteria: utente.noteSegreteria ?? "",
   });
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
-  const [salvato, setSalvato] = useState(false);
+  const notifica = useNotifica();
 
   function aggiorna<K extends keyof AggiornaAllievoDTO>(
     campo: K,
     valore: AggiornaAllievoDTO[K],
   ) {
     setForm((precedente) => ({ ...precedente, [campo]: valore }));
-    setSalvato(false);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     try {
       const aggiornato = await allievoApi.aggiorna(
         utente.id,
         costruisciPayload(form),
       );
       onSalvato(aggiornato);
-      setSalvato(true);
+      notifica("Salvato", "successo");
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Salvataggio non riuscito");
+      notifica(
+        error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -113,9 +114,6 @@ function FormAllievo({
 
   return (
     <Form onSubmit={handleSubmit} className="profilo-form">
-      {errore && <Alert variant="danger">{errore}</Alert>}
-      {salvato && <Alert variant="success">Salvato</Alert>}
-
       <h2>Dati anagrafici</h2>
       <Row>
         <Col md={6}>

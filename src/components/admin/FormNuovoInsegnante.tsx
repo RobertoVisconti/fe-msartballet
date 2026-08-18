@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { authApi } from "@/api/authApi";
 import CaricaImmagine from "./CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewInsegnanteDTO } from "@/interfaces/auth";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -21,13 +22,12 @@ const FORM_VUOTO: NewInsegnanteDTO = {
 function FormNuovoInsegnante() {
   const [form, setForm] = useState<NewInsegnanteDTO>(FORM_VUOTO);
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [creato, setCreato] = useState<InsegnanteRespDTO | null>(null);
+  const notifica = useNotifica();
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     setCreato(null);
     try {
       const payload = { ...form, imgProfilo: form.imgProfilo || undefined };
@@ -36,7 +36,10 @@ function FormNuovoInsegnante() {
       setForm(FORM_VUOTO);
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Registrazione non riuscita");
+      notifica(
+        error.response?.data?.message ?? "Registrazione non riuscita",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -44,7 +47,6 @@ function FormNuovoInsegnante() {
 
   return (
     <Form onSubmit={handleSubmit} className="profilo-form">
-      {errore && <Alert variant="danger">{errore}</Alert>}
       {creato && (
         <Alert variant="success">
           {creato.nome} {creato.cognome} registrato/a — email di attivazione

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Form, Button, Alert, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col, Alert } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { authApi } from "@/api/authApi";
 import CaricaImmagine from "./CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewAllievoDTO } from "@/interfaces/auth";
 import type { AllievoRespDTO, LarghezzaPunte } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
@@ -71,8 +72,8 @@ function costruisciPayload(form: NewAllievoDTO): NewAllievoDTO {
 function FormNuovoAllievo() {
   const [form, setForm] = useState<NewAllievoDTO>(FORM_VUOTO);
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [creato, setCreato] = useState<AllievoRespDTO | null>(null);
+  const notifica = useNotifica();
 
   function aggiorna<K extends keyof NewAllievoDTO>(
     campo: K,
@@ -84,7 +85,6 @@ function FormNuovoAllievo() {
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     setCreato(null);
     try {
       const nuovoAllievo = await authApi.creaAllievo(costruisciPayload(form));
@@ -92,7 +92,10 @@ function FormNuovoAllievo() {
       setForm(FORM_VUOTO);
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Registrazione non riuscita");
+      notifica(
+        error.response?.data?.message ?? "Registrazione non riuscita",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -100,7 +103,6 @@ function FormNuovoAllievo() {
 
   return (
     <Form onSubmit={handleSubmit} className="profilo-form">
-      {errore && <Alert variant="danger">{errore}</Alert>}
       {creato && (
         <Alert variant="success">
           {creato.nome} {creato.cognome} registrato/a — email di attivazione
