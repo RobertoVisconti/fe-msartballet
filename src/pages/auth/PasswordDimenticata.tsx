@@ -1,27 +1,30 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { Form, Button, Alert, Container } from "react-bootstrap";
+import { Form, Button, Container } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { authApi } from "@/api/authApi";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { useNotifica } from "@/components/common/ToastProvider";
 
 function PasswordDimenticata() {
   const [email, setEmail] = useState("");
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [inviata, setInviata] = useState(false);
+  const notifica = useNotifica();
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     try {
       await authApi.passwordDimenticata({ email });
       setInviata(true);
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Richiesta non riuscita");
+      notifica(
+        error.response?.data?.message ?? "Richiesta non riuscita",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -50,8 +53,6 @@ function PasswordDimenticata() {
           Inserisci l'email del tuo account: ti mandiamo un link per reimpostare
           la password.
         </p>
-
-        {errore && <Alert variant="danger">{errore}</Alert>}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-4" controlId="dimenticataEmail">

@@ -1,15 +1,18 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Form, Button, Alert, Container } from "react-bootstrap";
+import { Form, Button, Container } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { loginUser } from "@/redux/thunks/authThunks";
+import { useNotifica } from "@/components/common/ToastProvider";
 
 function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { status, error } = useAppSelector((state) => state.auth);
+
+  const { status } = useAppSelector((state) => state.auth);
+  const notifica = useNotifica();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +27,8 @@ function Login() {
         location.state as { from?: { pathname: string } } | null
       )?.from?.pathname;
       navigate(provenienza ?? "/", { replace: true });
+    } else {
+      notifica(risultato.payload ?? "Accesso non riuscito", "errore");
     }
   }
 
@@ -32,8 +37,6 @@ function Login() {
       <div className="auth-card">
         <h1>Accedi</h1>
         <p>Inserisci le tue credenziali per accedere all'area riservata.</p>
-
-        {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="loginEmail">

@@ -1452,3 +1452,15 @@
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
+
+/* Toast notifiche */
+
+.toast-container-app {
+  z-index: 2000;
+  padding: 20px;
+}
+
+.toast-container-app .toast {
+  min-width: 280px;
+  border: none;
+}

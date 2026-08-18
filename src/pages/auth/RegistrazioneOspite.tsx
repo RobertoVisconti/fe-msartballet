@@ -1,10 +1,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { Form, Button, Alert, Container } from "react-bootstrap";
+import { Form, Button, Container } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { authApi } from "@/api/authApi";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { useNotifica } from "@/components/common/ToastProvider";
 
 interface FormRegistrazione {
   nome: string;
@@ -23,8 +24,8 @@ const formVuoto: FormRegistrazione = {
 function RegistrazioneOspite() {
   const [form, setForm] = useState<FormRegistrazione>(formVuoto);
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
   const [completata, setCompletata] = useState(false);
+  const notifica = useNotifica();
 
   function aggiornaCampo(campo: keyof FormRegistrazione, valore: string) {
     setForm((precedente) => ({ ...precedente, [campo]: valore }));
@@ -33,13 +34,15 @@ function RegistrazioneOspite() {
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErrore(null);
     try {
       await authApi.registraOspite(form);
       setCompletata(true);
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(error.response?.data?.message ?? "Registrazione non riuscita");
+      notifica(
+        error.response?.data?.message ?? "Registrazione non riuscita",
+        "errore",
+      );
     } finally {
       setInCorso(false);
     }
@@ -68,8 +71,6 @@ function RegistrazioneOspite() {
           Crea un account ospite: potrai prenotare lezioni singole e acquistare
           prodotti.
         </p>
-
-        {errore && <Alert variant="danger">{errore}</Alert>}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="regNome">
