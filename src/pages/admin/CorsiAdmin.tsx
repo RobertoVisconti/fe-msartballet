@@ -7,7 +7,6 @@ import {
   Modal,
   Form,
   Alert,
-  Spinner,
   Row,
   Col,
 } from "react-bootstrap";
@@ -16,6 +15,12 @@ import { corsoApi } from "@/api/corsoApi";
 import { disciplinaApi } from "@/api/disciplinaApi";
 import { insegnanteApi } from "@/api/insegnanteApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type {
   CorsoRespDTO,
   NewCorsoDTO,
@@ -24,7 +29,7 @@ import type {
   GiornoSettimana,
 } from "@/interfaces/catalogo";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const LIVELLI: LivelloCorso[] = ["PRINCIPIANTE", "INTERMEDIO", "AVANZATO"];
 const GIORNI: { valore: GiornoSettimana; etichetta: string }[] = [
@@ -50,10 +55,12 @@ const formVuoto: NewCorsoDTO = {
 };
 
 function CorsiAdmin() {
-  const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<CorsoRespDTO> | null>(null);
   const [discipline, setDiscipline] = useState<DisciplinaRespDTO[]>([]);
   const [insegnanti, setInsegnanti] = useState<InsegnanteRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<CorsoRespDTO | null>(null);
@@ -69,17 +76,22 @@ function CorsiAdmin() {
       insegnanteApi.lista({ size: 100 }),
     ])
       .then(([paginaCorsi, paginaDiscipline, paginaInsegnanti]) => {
-        setCorsi(paginaCorsi.content);
+        setPagina(paginaCorsi);
         setDiscipline(paginaDiscipline.content);
         setInsegnanti(paginaInsegnanti.content);
+        setErrore(false);
       })
-      .catch(() => notifica("Impossibile caricare i dati", "errore"))
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare i dati", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaTutto();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -163,47 +175,57 @@ function CorsiAdmin() {
       )}
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento corsi..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare i corsi."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun corso registrato." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Titolo</th>
-              <th>Disciplina</th>
-              <th>Insegnante</th>
-              <th>Giorno</th>
-              <th>Prezzo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {corsi.map((corso) => (
-              <tr key={corso.id}>
-                <td>{corso.titolo}</td>
-                <td>{corso.nomeDisciplina}</td>
-                <td>{corso.nomeInsegnante}</td>
-                <td>{corso.giornoSettimana}</td>
-                <td>€ {corso.prezzoMensile}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(corso)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(corso)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Disciplina</th>
+                <th>Insegnante</th>
+                <th>Giorno</th>
+                <th>Prezzo</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((corso) => (
+                <tr key={corso.id}>
+                  <td>{corso.titolo}</td>
+                  <td>{corso.nomeDisciplina}</td>
+                  <td>{corso.nomeInsegnante}</td>
+                  <td>{corso.giornoSettimana}</td>
+                  <td>€ {corso.prezzoMensile}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(corso)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(corso)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal

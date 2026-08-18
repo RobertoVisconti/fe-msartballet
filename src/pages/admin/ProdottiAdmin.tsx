@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Alert,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { prodottoApi } from "@/api/prodottoApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type { ProdottoRespDTO, NewProdottoDTO } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: NewProdottoDTO = {
   titolo: "",
@@ -24,8 +22,10 @@ const formVuoto: NewProdottoDTO = {
 };
 
 function ProdottiAdmin() {
-  const [prodotti, setProdotti] = useState<ProdottoRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<ProdottoRespDTO> | null>(null);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<ProdottoRespDTO | null>(null);
@@ -37,14 +37,21 @@ function ProdottiAdmin() {
     setCaricamento(true);
     prodottoApi
       .lista({ size: 100 })
-      .then((pagina) => setProdotti(pagina.content))
-      .catch(() => notifica("Impossibile caricare i prodotti", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare i prodotti", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaLista();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -109,41 +116,51 @@ function ProdottiAdmin() {
       </div>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento prodotti..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare i prodotti."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun prodotto registrato." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Titolo</th>
-              <th>Prezzo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prodotti.map((prodotto) => (
-              <tr key={prodotto.id}>
-                <td>{prodotto.titolo}</td>
-                <td>€ {prodotto.prezzoProdotto}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(prodotto)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(prodotto)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Prezzo</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((prodotto) => (
+                <tr key={prodotto.id}>
+                  <td>{prodotto.titolo}</td>
+                  <td>€ {prodotto.prezzoProdotto}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(prodotto)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(prodotto)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>

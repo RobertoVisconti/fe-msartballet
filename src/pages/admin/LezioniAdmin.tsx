@@ -7,7 +7,6 @@ import {
   Modal,
   Form,
   Alert,
-  Spinner,
   Row,
   Col,
 } from "react-bootstrap";
@@ -15,9 +14,16 @@ import type { AxiosError } from "axios";
 import { lezioneApi } from "@/api/lezioneApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
+import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type { LezioneRespDTO, NewLezioneDTO } from "@/interfaces/lezione";
 import type { CorsoRespDTO, SalaRespDTO } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: NewLezioneDTO = {
   dataOraInizio: "",
@@ -34,17 +40,19 @@ function adessoPerInput(): string {
 }
 
 function LezioniAdmin() {
-  const [lezioni, setLezioni] = useState<LezioneRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<LezioneRespDTO> | null>(null);
   const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<LezioneRespDTO | null>(null);
   const [form, setForm] = useState<NewLezioneDTO>(formVuoto);
   const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaTutto() {
     setCaricamento(true);
@@ -54,17 +62,22 @@ function LezioniAdmin() {
       salaApi.lista({ size: 100 }),
     ])
       .then(([paginaLezioni, paginaCorsi, paginaSale]) => {
-        setLezioni(paginaLezioni.content);
+        setPagina(paginaLezioni);
         setCorsi(paginaCorsi.content);
         setSale(paginaSale.content);
+        setErrore(false);
       })
-      .catch(() => setErrore("Impossibile caricare i dati"))
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare i dati", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaTutto();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -111,8 +124,16 @@ function LezioniAdmin() {
   async function handleElimina(lezione: LezioneRespDTO) {
     const etichetta = new Date(lezione.dataOraInizio).toLocaleString("it-IT");
     if (!window.confirm(`Eliminare la lezione del ${etichetta}?`)) return;
-    await lezioneApi.elimina(lezione.id);
-    caricaTutto();
+    try {
+      await lezioneApi.elimina(lezione.id);
+      caricaTutto();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   const nessunCorso = corsi.length === 0;
@@ -137,50 +158,58 @@ function LezioniAdmin() {
         </Alert>
       )}
 
-      {errore && <Alert variant="danger">{errore}</Alert>}
-
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento lezioni..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare le lezioni."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessuna lezione programmata." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Data e ora</th>
-              <th>Corso</th>
-              <th>Sala</th>
-              <th>Prezzo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lezioni.map((lezione) => (
-              <tr key={lezione.id}>
-                <td>
-                  {new Date(lezione.dataOraInizio).toLocaleString("it-IT")}
-                </td>
-                <td>{lezione.titoloCorso}</td>
-                <td>{lezione.titoloSala}</td>
-                <td>€ {lezione.prezzoLezione}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(lezione)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(lezione)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Data e ora</th>
+                <th>Corso</th>
+                <th>Sala</th>
+                <th>Prezzo</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((lezione) => (
+                <tr key={lezione.id}>
+                  <td>
+                    {new Date(lezione.dataOraInizio).toLocaleString("it-IT")}
+                  </td>
+                  <td>{lezione.titoloCorso}</td>
+                  <td>{lezione.titoloSala}</td>
+                  <td>€ {lezione.prezzoLezione}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(lezione)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(lezione)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>

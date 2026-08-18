@@ -1,5 +1,4 @@
 import { Alert, Button, Spinner } from "react-bootstrap";
-import type { Page } from "@/interfaces/common";
 
 /* Caricamento in corso di una lista o di una pagina di dettaglio. */
 export function StatoCaricamento({
@@ -44,8 +43,8 @@ export function AvvisoLimite({ pagina }: { pagina: Page<unknown> | null }) {
 
   return (
     <Alert variant="warning" className="avviso-limite">
-      Visualizzati i primi {pagina.numberOfElements} di {pagina.totalElements}{" "}
-      risultati. Usa i filtri per restringere la ricerca.
+      Mostrati {pagina.numberOfElements} di {pagina.totalElements} risultati
+      totali.
     </Alert>
   );
 }

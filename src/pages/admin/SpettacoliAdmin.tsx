@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { spettacoloApi } from "@/api/spettacoloApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type { SpettacoloRespDTO, SpettacoloDTO } from "@/interfaces/galleria";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: SpettacoloDTO = {
   titolo: "",
@@ -22,8 +21,10 @@ const formVuoto: SpettacoloDTO = {
 };
 
 function SpettacoliAdmin() {
-  const [spettacoli, setSpettacoli] = useState<SpettacoloRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<SpettacoloRespDTO> | null>(null);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<SpettacoloRespDTO | null>(null);
@@ -35,14 +36,21 @@ function SpettacoliAdmin() {
     setCaricamento(true);
     spettacoloApi
       .lista({ size: 100 })
-      .then((pagina) => setSpettacoli(pagina.content))
-      .catch(() => notifica("Impossibile caricare gli spettacoli", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare gli spettacoli", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaLista();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -108,43 +116,53 @@ function SpettacoliAdmin() {
       </div>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento spettacoli..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare gli spettacoli."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessuno spettacolo registrato." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Titolo</th>
-              <th>Data evento</th>
-              <th>Luogo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {spettacoli.map((spettacolo) => (
-              <tr key={spettacolo.id}>
-                <td>{spettacolo.titolo}</td>
-                <td>{spettacolo.dataEvento}</td>
-                <td>{spettacolo.luogo}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(spettacolo)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(spettacolo)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Data evento</th>
+                <th>Luogo</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((spettacolo) => (
+                <tr key={spettacolo.id}>
+                  <td>{spettacolo.titolo}</td>
+                  <td>{spettacolo.dataEvento}</td>
+                  <td>{spettacolo.luogo}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(spettacolo)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(spettacolo)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>

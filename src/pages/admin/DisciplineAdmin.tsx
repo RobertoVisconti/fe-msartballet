@@ -1,27 +1,28 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { disciplinaApi } from "@/api/disciplinaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type {
   DisciplinaRespDTO,
   NewDisciplinaDTO,
 } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: NewDisciplinaDTO = { nome: "", descrizione: "" };
 
 function DisciplineAdmin() {
-  const [discipline, setDiscipline] = useState<DisciplinaRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<DisciplinaRespDTO> | null>(null);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<DisciplinaRespDTO | null>(null);
@@ -33,14 +34,21 @@ function DisciplineAdmin() {
     setCaricamento(true);
     disciplinaApi
       .lista({ size: 100 })
-      .then((pagina) => setDiscipline(pagina.content))
-      .catch(() => notifica("Impossibile caricare le discipline", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare le discipline", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaLista();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -101,41 +109,51 @@ function DisciplineAdmin() {
       </div>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento discipline..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare le discipline."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessuna disciplina registrata." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Descrizione</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {discipline.map((disciplina) => (
-              <tr key={disciplina.id}>
-                <td>{disciplina.nome}</td>
-                <td>{disciplina.descrizione}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(disciplina)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(disciplina)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrizione</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((disciplina) => (
+                <tr key={disciplina.id}>
+                  <td>{disciplina.nome}</td>
+                  <td>{disciplina.descrizione}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(disciplina)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(disciplina)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>

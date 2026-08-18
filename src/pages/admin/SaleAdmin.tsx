@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { salaApi } from "@/api/salaApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type { SalaRespDTO, SalaDTO } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: SalaDTO = { titolo: "", imgSala: "", prezzoAffitto: 0 };
 
 function SaleAdmin() {
-  const [sale, setSale] = useState<SalaRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<SalaRespDTO> | null>(null);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<SalaRespDTO | null>(null);
@@ -31,14 +32,21 @@ function SaleAdmin() {
     setCaricamento(true);
     salaApi
       .lista({ size: 100 })
-      .then((pagina) => setSale(pagina.content))
-      .catch(() => notifica("Impossibile caricare le sale", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare le sale", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaLista();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -81,8 +89,16 @@ function SaleAdmin() {
 
   async function handleElimina(sala: SalaRespDTO) {
     if (!window.confirm(`Eliminare la sala "${sala.titolo}"?`)) return;
-    await salaApi.elimina(sala.id);
-    caricaLista();
+    try {
+      await salaApi.elimina(sala.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -95,41 +111,51 @@ function SaleAdmin() {
       </div>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento sale..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare le sale."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessuna sala registrata." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Titolo</th>
-              <th>Prezzo affitto</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sale.map((sala) => (
-              <tr key={sala.id}>
-                <td>{sala.titolo}</td>
-                <td>€ {sala.prezzoAffitto}</td>
-                <td className="azioni-cella">
-                  <Button
-                    size="sm"
-                    variant="outline-light"
-                    onClick={() => apriModifica(sala)}
-                  >
-                    Modifica
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => handleElimina(sala)}
-                  >
-                    Elimina
-                  </Button>
-                </td>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Prezzo affitto</th>
+                <th>Azioni</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {pagina.content.map((sala) => (
+                <tr key={sala.id}>
+                  <td>{sala.titolo}</td>
+                  <td>€ {sala.prezzoAffitto}</td>
+                  <td className="azioni-cella">
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => apriModifica(sala)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleElimina(sala)}
+                    >
+                      Elimina
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>

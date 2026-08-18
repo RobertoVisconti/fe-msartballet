@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Alert,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Modal, Form, Alert } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { mediaApi } from "@/api/mediaApi";
 import { spettacoloApi } from "@/api/spettacoloApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type {
   MediaRespDTO,
   NewMediaDTO,
   SpettacoloRespDTO,
   TipoMedia,
 } from "@/interfaces/galleria";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const formVuoto: NewMediaDTO = {
   url: "",
@@ -30,9 +28,11 @@ const formVuoto: NewMediaDTO = {
 };
 
 function MediaAdmin() {
-  const [media, setMedia] = useState<MediaRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<MediaRespDTO> | null>(null);
   const [spettacoli, setSpettacoli] = useState<SpettacoloRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<MediaRespDTO | null>(null);
@@ -47,16 +47,21 @@ function MediaAdmin() {
       spettacoloApi.lista({ size: 100 }),
     ])
       .then(([paginaMedia, paginaSpettacoli]) => {
-        setMedia(paginaMedia.content);
+        setPagina(paginaMedia);
         setSpettacoli(paginaSpettacoli.content);
+        setErrore(false);
       })
-      .catch(() => notifica("Impossibile caricare i dati", "errore"))
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare i dati", "errore");
+      })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     caricaTutto();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -133,48 +138,58 @@ function MediaAdmin() {
       )}
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento media..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare i media."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun media caricato." />
       ) : (
-        <Table responsive className="tabella-admin">
-          <thead>
-            <tr>
-              <th>Titolo</th>
-              <th>Tipo</th>
-              <th>Spettacolo</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {media.map((m) => {
-              const spettacolo = spettacoli.find(
-                (s) => s.id === m.idSpettacolo,
-              );
-              return (
-                <tr key={m.id}>
-                  <td>{m.titolo}</td>
-                  <td>{m.tipoMedia}</td>
-                  <td>{spettacolo?.titolo ?? "—"}</td>
-                  <td className="azioni-cella">
-                    <Button
-                      size="sm"
-                      variant="outline-light"
-                      onClick={() => apriModifica(m)}
-                    >
-                      Modifica
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline-danger"
-                      onClick={() => handleElimina(m)}
-                    >
-                      Elimina
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <Table responsive className="tabella-admin">
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Tipo</th>
+                <th>Spettacolo</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagina.content.map((m) => {
+                const spettacolo = spettacoli.find(
+                  (s) => s.id === m.idSpettacolo,
+                );
+                return (
+                  <tr key={m.id}>
+                    <td>{m.titolo}</td>
+                    <td>{m.tipoMedia}</td>
+                    <td>{spettacolo?.titolo ?? "—"}</td>
+                    <td className="azioni-cella">
+                      <Button
+                        size="sm"
+                        variant="outline-light"
+                        onClick={() => apriModifica(m)}
+                      >
+                        Modifica
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline-danger"
+                        onClick={() => handleElimina(m)}
+                      >
+                        Elimina
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </>
       )}
 
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>
