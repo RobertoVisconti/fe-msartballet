@@ -1,4 +1,5 @@
 import { Alert, Button, Spinner } from "react-bootstrap";
+import type { Page } from "@/interfaces/common";
 
 /* Caricamento in corso di una lista o di una pagina di dettaglio. */
 export function StatoCaricamento({
