@@ -8,12 +8,16 @@ import {
   Col,
   Button,
   Badge,
-  Pagination,
-  Spinner,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import Paginazione from "@/components/common/Paginazione";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+} from "@/components/common/StatiLista";
 import type { AllievoRespDTO } from "@/interfaces/utente";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
 
@@ -28,6 +32,8 @@ function AllieviList() {
     accountAttivo: "",
   });
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
   const notifica = useNotifica();
 
   useEffect(() => {
@@ -43,10 +49,16 @@ function AllieviList() {
         page: numeroPagina,
         size: DIMENSIONE_PAGINA,
       })
-      .then(setPagina)
-      .catch(() => notifica("Impossibile caricare gli allievi", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare gli allievi", "errore");
+      })
       .finally(() => setCaricamento(false));
-  }, [filtri, numeroPagina]);
+  }, [filtri, numeroPagina, tentativo]);
 
   async function toggleAttivo(allievo: AllievoRespDTO) {
     const azione = allievo.accountAttivo
@@ -72,6 +84,9 @@ function AllieviList() {
       );
     }
   }
+
+  const filtriAttivi =
+    filtri.nome !== "" || filtri.cognome !== "" || filtri.accountAttivo !== "";
 
   return (
     <Container className="page-container">
@@ -114,7 +129,20 @@ function AllieviList() {
       </Row>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento allievi..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare gli allievi."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto
+          testo={
+            filtriAttivi
+              ? "Nessun allievo corrisponde ai filtri impostati."
+              : "Nessun allievo registrato."
+          }
+        />
       ) : (
         <>
           <Table responsive className="tabella-admin">
@@ -128,7 +156,7 @@ function AllieviList() {
               </tr>
             </thead>
             <tbody>
-              {pagina?.content.map((allievo) => (
+              {pagina.content.map((allievo) => (
                 <tr key={allievo.id}>
                   <td>{allievo.nome}</td>
                   <td>{allievo.cognome}</td>
@@ -153,19 +181,7 @@ function AllieviList() {
             </tbody>
           </Table>
 
-          {pagina && pagina.totalPages > 1 && (
-            <Pagination>
-              {Array.from({ length: pagina.totalPages }, (_, i) => (
-                <Pagination.Item
-                  key={i}
-                  active={i === numeroPagina}
-                  onClick={() => setNumeroPagina(i)}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-            </Pagination>
-          )}
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
         </>
       )}
     </Container>

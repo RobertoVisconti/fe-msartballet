@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Container,
-  Table,
-  Button,
-  Badge,
-  Pagination,
-  Spinner,
-} from "react-bootstrap";
+import { Container, Table, Button, Badge } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import Paginazione from "@/components/common/Paginazione";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+} from "@/components/common/StatiLista";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
 
@@ -20,16 +19,24 @@ function InsegnantiList() {
   const [pagina, setPagina] = useState<Page<InsegnanteRespDTO> | null>(null);
   const [numeroPagina, setNumeroPagina] = useState(0);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
   const notifica = useNotifica();
 
   useEffect(() => {
     setCaricamento(true);
     insegnanteApi
       .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
-      .then(setPagina)
-      .catch(() => notifica("Impossibile caricare gli insegnanti", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare gli insegnanti", "errore");
+      })
       .finally(() => setCaricamento(false));
-  }, [numeroPagina]);
+  }, [numeroPagina, tentativo]);
 
   async function toggleAttivo(insegnante: InsegnanteRespDTO) {
     const azione = insegnante.accountAttivo
@@ -61,7 +68,14 @@ function InsegnantiList() {
       <h1>Gestione Insegnanti</h1>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento insegnanti..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare gli insegnanti."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun insegnante registrato." />
       ) : (
         <>
           <Table responsive className="tabella-admin">
@@ -75,7 +89,7 @@ function InsegnantiList() {
               </tr>
             </thead>
             <tbody>
-              {pagina?.content.map((insegnante) => (
+              {pagina.content.map((insegnante) => (
                 <tr key={insegnante.id}>
                   <td>{insegnante.nome}</td>
                   <td>{insegnante.cognome}</td>
@@ -102,19 +116,7 @@ function InsegnantiList() {
             </tbody>
           </Table>
 
-          {pagina && pagina.totalPages > 1 && (
-            <Pagination>
-              {Array.from({ length: pagina.totalPages }, (_, i) => (
-                <Pagination.Item
-                  key={i}
-                  active={i === numeroPagina}
-                  onClick={() => setNumeroPagina(i)}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-            </Pagination>
-          )}
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
         </>
       )}
     </Container>

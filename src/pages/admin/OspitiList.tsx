@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Container, Table, Pagination, Spinner } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import { ospiteApi } from "@/api/ospiteApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import Paginazione from "@/components/common/Paginazione";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+} from "@/components/common/StatiLista";
 import type { OspiteRespDTO } from "@/interfaces/utente";
 import type { Page } from "@/interfaces/common";
 
@@ -12,16 +18,24 @@ function OspitiList() {
   const [pagina, setPagina] = useState<Page<OspiteRespDTO> | null>(null);
   const [numeroPagina, setNumeroPagina] = useState(0);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
   const notifica = useNotifica();
 
   useEffect(() => {
     setCaricamento(true);
     ospiteApi
       .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
-      .then(setPagina)
-      .catch(() => notifica("Impossibile caricare gli ospiti", "errore"))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => {
+        setErrore(true);
+        notifica("Impossibile caricare gli ospiti", "errore");
+      })
       .finally(() => setCaricamento(false));
-  }, [numeroPagina]);
+  }, [numeroPagina, tentativo]);
 
   return (
     <Container className="page-container">
@@ -32,7 +46,14 @@ function OspitiList() {
       </p>
 
       {caricamento ? (
-        <Spinner animation="border" />
+        <StatoCaricamento testo="Caricamento ospiti..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare gli ospiti."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun ospite registrato." />
       ) : (
         <>
           <Table responsive className="tabella-admin">
@@ -47,7 +68,7 @@ function OspitiList() {
               </tr>
             </thead>
             <tbody>
-              {pagina?.content.map((ospite) => (
+              {pagina.content.map((ospite) => (
                 <tr key={ospite.id}>
                   <td>{ospite.nome}</td>
                   <td>{ospite.cognome}</td>
@@ -62,19 +83,7 @@ function OspitiList() {
             </tbody>
           </Table>
 
-          {pagina && pagina.totalPages > 1 && (
-            <Pagination>
-              {Array.from({ length: pagina.totalPages }, (_, i) => (
-                <Pagination.Item
-                  key={i}
-                  active={i === numeroPagina}
-                  onClick={() => setNumeroPagina(i)}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-            </Pagination>
-          )}
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
         </>
       )}
     </Container>
