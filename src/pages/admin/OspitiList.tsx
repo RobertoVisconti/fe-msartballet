@@ -42,6 +42,7 @@ function OspitiList() {
                 <th>Nome</th>
                 <th>Cognome</th>
                 <th>Email</th>
+                <th>Telefono</th>
                 <th>Iscritto dal</th>
                 <th></th>
               </tr>
@@ -52,6 +53,7 @@ function OspitiList() {
                   <td>{ospite.nome}</td>
                   <td>{ospite.cognome}</td>
                   <td>{ospite.email}</td>
+                  <td>{ospite.telefono ?? "—"}</td>
                   <td>{ospite.dataRegistrazione}</td>
                   <td className="azioni-cella">
                     <Link to={`/admin/ospiti/${ospite.id}`}>Apri</Link>

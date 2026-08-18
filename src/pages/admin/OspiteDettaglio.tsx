@@ -54,8 +54,10 @@ function OspiteDettaglio() {
         <dl>
           <dt>Email</dt>
           <dd>{ospite.email}</dd>
+          <dt>Telefono</dt>
+          <dd>{ospite.telefono ?? "—"}</dd>
           <dt>Data di nascita</dt>
-          <dd>{ospite.dataDiNascita}</dd>
+          <dd>{ospite.dataDiNascita ?? "—"}</dd>
           <dt>Iscritto dal</dt>
           <dd>{ospite.dataRegistrazione}</dd>
         </dl>

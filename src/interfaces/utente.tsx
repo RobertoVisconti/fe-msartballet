@@ -90,7 +90,8 @@ export interface OspiteRespDTO {
   nome: string;
   cognome: string;
   email: string;
-  dataDiNascita: string;
+  telefono: string | null;
+  dataDiNascita: string | null;
   imgProfilo: string | null;
   ruolo: "OSPITE";
   dataRegistrazione: string;

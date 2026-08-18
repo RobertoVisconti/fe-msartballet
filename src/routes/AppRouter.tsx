@@ -37,6 +37,7 @@ import RegistrazioneAdmin from "@/pages/admin/RegistrazioneAdmin";
 import RegistraAllievo from "@/pages/admin/RegistraAllievo";
 import RegistraInsegnante from "@/pages/admin/RegistraInsegnante";
 import RegistraAdminUtente from "@/pages/admin/RegistraAdminUtente";
+import TransazioniAdmin from "@/pages/admin/TransazioniAdmin";
 
 function AppRouter() {
   return (
@@ -106,6 +107,7 @@ function AppRouter() {
           <Route path="/admin/lezioni" element={<LezioniAdmin />} />
           <Route path="/admin/iscrizioni" element={<IscrizioniAdmin />} />
           <Route path="/admin/prenotazioni" element={<PrenotazioniAdmin />} />
+          <Route path="/admin/transazioni" element={<TransazioniAdmin />} />
         </Route>
       </Route>
     </Routes>
