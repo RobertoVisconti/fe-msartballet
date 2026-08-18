@@ -6,11 +6,11 @@ import {
   Button,
   Modal,
   Form,
-  Alert,
   Spinner,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { disciplinaApi } from "@/api/disciplinaApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   DisciplinaRespDTO,
   NewDisciplinaDTO,
@@ -22,20 +22,19 @@ const formVuoto: NewDisciplinaDTO = { nome: "", descrizione: "" };
 function DisciplineAdmin() {
   const [discipline, setDiscipline] = useState<DisciplinaRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<DisciplinaRespDTO | null>(null);
   const [form, setForm] = useState<NewDisciplinaDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaLista() {
     setCaricamento(true);
     disciplinaApi
       .lista({ size: 100 })
       .then((pagina) => setDiscipline(pagina.content))
-      .catch(() => setErrore("Impossibile caricare le discipline"))
+      .catch(() => notifica("Impossibile caricare le discipline", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -46,21 +45,18 @@ function DisciplineAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   function apriModifica(disciplina: DisciplinaRespDTO) {
     setInModifica(disciplina);
     setForm({ nome: disciplina.nome, descrizione: disciplina.descrizione });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       if (inModifica) {
         await disciplinaApi.modifica(inModifica.id, form);
@@ -71,8 +67,9 @@ function DisciplineAdmin() {
       caricaLista();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -82,8 +79,16 @@ function DisciplineAdmin() {
   async function handleElimina(disciplina: DisciplinaRespDTO) {
     if (!window.confirm(`Eliminare la disciplina "${disciplina.nome}"?`))
       return;
-    await disciplinaApi.elimina(disciplina.id);
-    caricaLista();
+    try {
+      await disciplinaApi.elimina(disciplina.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -94,8 +99,6 @@ function DisciplineAdmin() {
           + Nuova disciplina
         </Button>
       </div>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -143,7 +146,6 @@ function DisciplineAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Nome</Form.Label>
               <Form.Control

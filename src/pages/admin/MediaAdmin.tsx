@@ -13,6 +13,7 @@ import type { AxiosError } from "axios";
 import { mediaApi } from "@/api/mediaApi";
 import { spettacoloApi } from "@/api/spettacoloApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   MediaRespDTO,
   NewMediaDTO,
@@ -32,13 +33,12 @@ function MediaAdmin() {
   const [media, setMedia] = useState<MediaRespDTO[]>([]);
   const [spettacoli, setSpettacoli] = useState<SpettacoloRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<MediaRespDTO | null>(null);
   const [form, setForm] = useState<NewMediaDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaTutto() {
     setCaricamento(true);
@@ -50,7 +50,7 @@ function MediaAdmin() {
         setMedia(paginaMedia.content);
         setSpettacoli(paginaSpettacoli.content);
       })
-      .catch(() => setErrore("Impossibile caricare i dati"))
+      .catch(() => notifica("Impossibile caricare i dati", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -61,7 +61,6 @@ function MediaAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
@@ -73,14 +72,12 @@ function MediaAdmin() {
       titolo: m.titolo,
       idSpettacolo: m.idSpettacolo,
     });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       if (inModifica) {
         await mediaApi.modifica(inModifica.id, form);
@@ -91,8 +88,9 @@ function MediaAdmin() {
       caricaTutto();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -101,8 +99,16 @@ function MediaAdmin() {
 
   async function handleElimina(m: MediaRespDTO) {
     if (!window.confirm(`Eliminare "${m.titolo}"?`)) return;
-    await mediaApi.elimina(m.id);
-    caricaTutto();
+    try {
+      await mediaApi.elimina(m.id);
+      caricaTutto();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   const nessunoSpettacolo = spettacoli.length === 0;
@@ -125,8 +131,6 @@ function MediaAdmin() {
           Serve almeno uno spettacolo prima di poter aggiungere un media.
         </Alert>
       )}
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -181,7 +185,6 @@ function MediaAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Titolo</Form.Label>
               <Form.Control

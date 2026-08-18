@@ -6,12 +6,12 @@ import {
   Button,
   Modal,
   Form,
-  Alert,
   Spinner,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { salaApi } from "@/api/salaApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { SalaRespDTO, SalaDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -20,20 +20,19 @@ const formVuoto: SalaDTO = { titolo: "", imgSala: "", prezzoAffitto: 0 };
 function SaleAdmin() {
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<SalaRespDTO | null>(null);
   const [form, setForm] = useState<SalaDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaLista() {
     setCaricamento(true);
     salaApi
       .lista({ size: 100 })
       .then((pagina) => setSale(pagina.content))
-      .catch(() => setErrore("Impossibile caricare le sale"))
+      .catch(() => notifica("Impossibile caricare le sale", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -44,7 +43,6 @@ function SaleAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
@@ -55,14 +53,13 @@ function SaleAdmin() {
       imgSala: sala.imgSala,
       prezzoAffitto: sala.prezzoAffitto,
     });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
+
     try {
       if (inModifica) {
         await salaApi.modifica(inModifica.id, form);
@@ -73,8 +70,9 @@ function SaleAdmin() {
       caricaLista();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -95,8 +93,6 @@ function SaleAdmin() {
           + Nuova sala
         </Button>
       </div>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -144,7 +140,6 @@ function SaleAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Titolo</Form.Label>
               <Form.Control

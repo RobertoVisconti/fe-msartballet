@@ -14,6 +14,7 @@ import { utenteApi } from "@/api/utenteApi";
 import FormAllievo from "@/components/admin/FormAllievo";
 import FormInsegnante from "@/components/admin/FormInsegnante";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   UtenteMe,
   AllievoRespDTO,
@@ -147,15 +148,12 @@ function CambiaPassword() {
     conferma: "",
   });
   const [inCorso, setInCorso] = useState(false);
-  const [errore, setErrore] = useState<string | null>(null);
-  const [fatto, setFatto] = useState(false);
+  const notifica = useNotifica();
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
-    setErrore(null);
-
     if (form.nuovaPassword !== form.conferma) {
-      setErrore("Le due password non coincidono");
+      notifica("Le due password non coincidono", "errore");
       return;
     }
 
@@ -166,12 +164,14 @@ function CambiaPassword() {
         nuovaPassword: form.nuovaPassword,
       };
       await utenteApi.cambiaPassword(dto);
-      setFatto(true);
+      notifica("Password aggiornata", "successo");
+
       setForm({ vecchiaPassword: "", nuovaPassword: "", conferma: "" });
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErrore(
+      notifica(
         error.response?.data?.message ?? "Cambio password non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -181,8 +181,6 @@ function CambiaPassword() {
   return (
     <section className="cambia-password">
       <h2>Cambia password</h2>
-      {errore && <Alert variant="danger">{errore}</Alert>}
-      {fatto && <Alert variant="success">Password aggiornata</Alert>}
       <Form onSubmit={handleSubmit}>
         <Row>
           <Col md={4}>

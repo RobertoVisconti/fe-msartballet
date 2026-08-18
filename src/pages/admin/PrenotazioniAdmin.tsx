@@ -7,16 +7,18 @@ import {
   Col,
   Badge,
   Spinner,
-  Alert,
   Button,
 } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { prenotazioneApi } from "@/api/prenotazioneApi";
 import { lezioneApi } from "@/api/lezioneApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   PrenotazioneRespDTO,
   StatoPrenotazione,
 } from "@/interfaces/prenotazione";
 import type { LezioneRespDTO } from "@/interfaces/lezione";
+import type { ErrorsDTO } from "@/interfaces/common";
 
 const STATI: StatoPrenotazione[] = [
   "IN_ATTESA",
@@ -38,7 +40,7 @@ function PrenotazioniAdmin() {
   const [filtroLezione, setFiltroLezione] = useState("");
   const [filtroStato, setFiltroStato] = useState("");
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     lezioneApi
@@ -55,7 +57,7 @@ function PrenotazioniAdmin() {
         size: 100,
       })
       .then((pagina) => setPrenotazioni(pagina.content))
-      .catch(() => setErrore("Impossibile caricare le prenotazioni"))
+      .catch(() => notifica("Impossibile caricare le prenotazioni", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -68,12 +70,20 @@ function PrenotazioniAdmin() {
     prenotazione: PrenotazioneRespDTO,
     nuovoStato: StatoPrenotazione,
   ) {
-    const aggiornata = await prenotazioneApi.cambiaStato(prenotazione.id, {
-      statoPrenotazione: nuovoStato,
-    });
-    setPrenotazioni((precedente) =>
-      precedente.map((p) => (p.id === aggiornata.id ? aggiornata : p)),
-    );
+    try {
+      const aggiornata = await prenotazioneApi.cambiaStato(prenotazione.id, {
+        statoPrenotazione: nuovoStato,
+      });
+      setPrenotazioni((precedente) =>
+        precedente.map((p) => (p.id === aggiornata.id ? aggiornata : p)),
+      );
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Cambio stato non riuscito",
+        "errore",
+      );
+    }
   }
 
   async function handleElimina(prenotazione: PrenotazioneRespDTO) {
@@ -83,8 +93,16 @@ function PrenotazioniAdmin() {
       )
     )
       return;
-    await prenotazioneApi.elimina(prenotazione.id);
-    caricaLista();
+    try {
+      await prenotazioneApi.elimina(prenotazione.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   function etichettaLezione(idLezione: string): string {
@@ -126,8 +144,6 @@ function PrenotazioniAdmin() {
           </Form.Select>
         </Col>
       </Row>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />

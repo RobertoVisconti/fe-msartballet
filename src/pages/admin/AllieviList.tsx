@@ -10,11 +10,12 @@ import {
   Badge,
   Pagination,
   Spinner,
-  Alert,
 } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { AllievoRespDTO } from "@/interfaces/utente";
-import type { Page } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const DIMENSIONE_PAGINA = 20;
 
@@ -27,7 +28,7 @@ function AllieviList() {
     accountAttivo: "",
   });
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     setCaricamento(true);
@@ -43,7 +44,7 @@ function AllieviList() {
         size: DIMENSIONE_PAGINA,
       })
       .then(setPagina)
-      .catch(() => setErrore("Impossibile caricare gli allievi"))
+      .catch(() => notifica("Impossibile caricare gli allievi", "errore"))
       .finally(() => setCaricamento(false));
   }, [filtri, numeroPagina]);
 
@@ -51,17 +52,25 @@ function AllieviList() {
     const azione = allievo.accountAttivo
       ? allievoApi.disattiva
       : allievoApi.riattiva;
-    const aggiornato = await azione(allievo.id);
-    setPagina((precedente) =>
-      precedente
-        ? {
-            ...precedente,
-            content: precedente.content.map((a) =>
-              a.id === aggiornato.id ? aggiornato : a,
-            ),
-          }
-        : precedente,
-    );
+    try {
+      const aggiornato = await azione(allievo.id);
+      setPagina((precedente) =>
+        precedente
+          ? {
+              ...precedente,
+              content: precedente.content.map((a) =>
+                a.id === aggiornato.id ? aggiornato : a,
+              ),
+            }
+          : precedente,
+      );
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Operazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -103,8 +112,6 @@ function AllieviList() {
           </Form.Select>
         </Col>
       </Row>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />

@@ -12,6 +12,7 @@ import {
 import type { AxiosError } from "axios";
 import { prodottoApi } from "@/api/prodottoApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { ProdottoRespDTO, NewProdottoDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -25,20 +26,19 @@ const formVuoto: NewProdottoDTO = {
 function ProdottiAdmin() {
   const [prodotti, setProdotti] = useState<ProdottoRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<ProdottoRespDTO | null>(null);
   const [form, setForm] = useState<NewProdottoDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaLista() {
     setCaricamento(true);
     prodottoApi
       .lista({ size: 100 })
       .then((pagina) => setProdotti(pagina.content))
-      .catch(() => setErrore("Impossibile caricare i prodotti"))
+      .catch(() => notifica("Impossibile caricare i prodotti", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -49,7 +49,6 @@ function ProdottiAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
@@ -61,14 +60,12 @@ function ProdottiAdmin() {
       imgProdotto: prodotto.imgProdotto,
       prezzoProdotto: prodotto.prezzoProdotto,
     });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       if (inModifica) {
         await prodottoApi.modifica(inModifica.id, form);
@@ -79,8 +76,9 @@ function ProdottiAdmin() {
       caricaLista();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -89,8 +87,16 @@ function ProdottiAdmin() {
 
   async function handleElimina(prodotto: ProdottoRespDTO) {
     if (!window.confirm(`Eliminare il prodotto "${prodotto.titolo}"?`)) return;
-    await prodottoApi.elimina(prodotto.id);
-    caricaLista();
+    try {
+      await prodottoApi.elimina(prodotto.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -101,8 +107,6 @@ function ProdottiAdmin() {
           + Nuovo prodotto
         </Button>
       </div>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -150,7 +154,6 @@ function ProdottiAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Titolo</Form.Label>
               <Form.Control

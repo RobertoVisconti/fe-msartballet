@@ -15,6 +15,7 @@ import type { AxiosError } from "axios";
 import { corsoApi } from "@/api/corsoApi";
 import { disciplinaApi } from "@/api/disciplinaApi";
 import { insegnanteApi } from "@/api/insegnanteApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   CorsoRespDTO,
   NewCorsoDTO,
@@ -53,13 +54,12 @@ function CorsiAdmin() {
   const [discipline, setDiscipline] = useState<DisciplinaRespDTO[]>([]);
   const [insegnanti, setInsegnanti] = useState<InsegnanteRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<CorsoRespDTO | null>(null);
   const [form, setForm] = useState<NewCorsoDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaTutto() {
     setCaricamento(true);
@@ -73,7 +73,7 @@ function CorsiAdmin() {
         setDiscipline(paginaDiscipline.content);
         setInsegnanti(paginaInsegnanti.content);
       })
-      .catch(() => setErrore("Impossibile caricare i dati"))
+      .catch(() => notifica("Impossibile caricare i dati", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -84,7 +84,6 @@ function CorsiAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
@@ -101,14 +100,12 @@ function CorsiAdmin() {
       idDisciplina: corso.idDisciplina,
       idInsegnante: corso.idInsegnante,
     });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       if (inModifica) {
         await corsoApi.modifica(inModifica.id, form);
@@ -119,8 +116,9 @@ function CorsiAdmin() {
       caricaTutto();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -129,8 +127,16 @@ function CorsiAdmin() {
 
   async function handleElimina(corso: CorsoRespDTO) {
     if (!window.confirm(`Eliminare il corso "${corso.titolo}"?`)) return;
-    await corsoApi.elimina(corso.id);
-    caricaTutto();
+    try {
+      await corsoApi.elimina(corso.id);
+      caricaTutto();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   const nessunaDisciplina = discipline.length === 0;
@@ -155,8 +161,6 @@ function CorsiAdmin() {
           corso.
         </Alert>
       )}
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -215,7 +219,6 @@ function CorsiAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">

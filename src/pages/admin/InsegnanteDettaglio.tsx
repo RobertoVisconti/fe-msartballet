@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Badge, Button, Spinner, Alert } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
 import FormInsegnante from "@/components/admin/FormInsegnante";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
+import type { ErrorsDTO } from "@/interfaces/common";
 
 function InsegnanteDettaglio() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +14,7 @@ function InsegnanteDettaglio() {
   const [insegnante, setInsegnante] = useState<InsegnanteRespDTO | null>(null);
   const [caricamento, setCaricamento] = useState(true);
   const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     if (!id) return;
@@ -26,8 +30,16 @@ function InsegnanteDettaglio() {
     const azione = insegnante.accountAttivo
       ? insegnanteApi.disattiva
       : insegnanteApi.riattiva;
-    const aggiornato = await azione(insegnante.id);
-    setInsegnante(aggiornato);
+    try {
+      const aggiornato = await azione(insegnante.id);
+      setInsegnante(aggiornato);
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Operazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   if (caricamento) {

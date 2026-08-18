@@ -6,11 +6,11 @@ import {
   Button,
   Modal,
   Form,
-  Alert,
   Spinner,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { spettacoloApi } from "@/api/spettacoloApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { SpettacoloRespDTO, SpettacoloDTO } from "@/interfaces/galleria";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -24,20 +24,19 @@ const formVuoto: SpettacoloDTO = {
 function SpettacoliAdmin() {
   const [spettacoli, setSpettacoli] = useState<SpettacoloRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [inModifica, setInModifica] = useState<SpettacoloRespDTO | null>(null);
   const [form, setForm] = useState<SpettacoloDTO>(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaLista() {
     setCaricamento(true);
     spettacoloApi
       .lista({ size: 100 })
       .then((pagina) => setSpettacoli(pagina.content))
-      .catch(() => setErrore("Impossibile caricare gli spettacoli"))
+      .catch(() => notifica("Impossibile caricare gli spettacoli", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -48,7 +47,6 @@ function SpettacoliAdmin() {
   function apriCreazione() {
     setInModifica(null);
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
@@ -60,14 +58,12 @@ function SpettacoliAdmin() {
       dataEvento: spettacolo.dataEvento,
       luogo: spettacolo.luogo,
     });
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       if (inModifica) {
         await spettacoloApi.modifica(inModifica.id, form);
@@ -78,8 +74,9 @@ function SpettacoliAdmin() {
       caricaLista();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Salvataggio non riuscito",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -89,8 +86,16 @@ function SpettacoliAdmin() {
   async function handleElimina(spettacolo: SpettacoloRespDTO) {
     if (!window.confirm(`Eliminare lo spettacolo "${spettacolo.titolo}"?`))
       return;
-    await spettacoloApi.elimina(spettacolo.id);
-    caricaLista();
+    try {
+      await spettacoloApi.elimina(spettacolo.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -101,8 +106,6 @@ function SpettacoliAdmin() {
           + Nuovo spettacolo
         </Button>
       </div>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -152,7 +155,6 @@ function SpettacoliAdmin() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Titolo</Form.Label>
               <Form.Control

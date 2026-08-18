@@ -7,11 +7,12 @@ import {
   Badge,
   Pagination,
   Spinner,
-  Alert,
 } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
-import type { Page } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const DIMENSIONE_PAGINA = 20;
 
@@ -19,14 +20,14 @@ function InsegnantiList() {
   const [pagina, setPagina] = useState<Page<InsegnanteRespDTO> | null>(null);
   const [numeroPagina, setNumeroPagina] = useState(0);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     setCaricamento(true);
     insegnanteApi
       .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
       .then(setPagina)
-      .catch(() => setErrore("Impossibile caricare gli insegnanti"))
+      .catch(() => notifica("Impossibile caricare gli insegnanti", "errore"))
       .finally(() => setCaricamento(false));
   }, [numeroPagina]);
 
@@ -34,24 +35,30 @@ function InsegnantiList() {
     const azione = insegnante.accountAttivo
       ? insegnanteApi.disattiva
       : insegnanteApi.riattiva;
-    const aggiornato = await azione(insegnante.id);
-    setPagina((precedente) =>
-      precedente
-        ? {
-            ...precedente,
-            content: precedente.content.map((i) =>
-              i.id === aggiornato.id ? aggiornato : i,
-            ),
-          }
-        : precedente,
-    );
+    try {
+      const aggiornato = await azione(insegnante.id);
+      setPagina((precedente) =>
+        precedente
+          ? {
+              ...precedente,
+              content: precedente.content.map((i) =>
+                i.id === aggiornato.id ? aggiornato : i,
+              ),
+            }
+          : precedente,
+      );
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Operazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
     <Container className="page-container">
       <h1>Gestione Insegnanti</h1>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />

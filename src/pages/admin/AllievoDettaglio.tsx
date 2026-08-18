@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Badge, Button, Spinner, Alert } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
 import FormAllievo from "@/components/admin/FormAllievo";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type { AllievoRespDTO } from "@/interfaces/utente";
+import type { ErrorsDTO } from "@/interfaces/common";
 
 function AllievoDettaglio() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +14,7 @@ function AllievoDettaglio() {
   const [allievo, setAllievo] = useState<AllievoRespDTO | null>(null);
   const [caricamento, setCaricamento] = useState(true);
   const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     if (!id) return;
@@ -26,8 +30,16 @@ function AllievoDettaglio() {
     const azione = allievo.accountAttivo
       ? allievoApi.disattiva
       : allievoApi.riattiva;
-    const aggiornato = await azione(allievo.id);
-    setAllievo(aggiornato);
+    try {
+      const aggiornato = await azione(allievo.id);
+      setAllievo(aggiornato);
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Operazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   if (caricamento) {

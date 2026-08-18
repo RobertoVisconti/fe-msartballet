@@ -7,16 +7,18 @@ import {
   Col,
   Badge,
   Spinner,
-  Alert,
   Button,
 } from "react-bootstrap";
+import type { AxiosError } from "axios";
 import { iscrizioneApi } from "@/api/iscrizioneApi";
 import { corsoApi } from "@/api/corsoApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   IscrizioneRespDTO,
   StatoIscrizione,
 } from "@/interfaces/iscrizione";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
+import type { ErrorsDTO } from "@/interfaces/common";
 
 const STATI: StatoIscrizione[] = ["ATTIVA", "COMPLETATA", "ANNULLATA"];
 
@@ -32,7 +34,7 @@ function IscrizioniAdmin() {
   const [filtroCorso, setFiltroCorso] = useState("");
   const [filtroStato, setFiltroStato] = useState("");
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  const notifica = useNotifica();
 
   useEffect(() => {
     corsoApi.lista({ size: 100 }).then((pagina) => setCorsi(pagina.content));
@@ -47,7 +49,7 @@ function IscrizioniAdmin() {
         size: 100,
       })
       .then((pagina) => setIscrizioni(pagina.content))
-      .catch(() => setErrore("Impossibile caricare le iscrizioni"))
+      .catch(() => notifica("Impossibile caricare le iscrizioni", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -60,12 +62,20 @@ function IscrizioniAdmin() {
     iscrizione: IscrizioneRespDTO,
     nuovoStato: StatoIscrizione,
   ) {
-    const aggiornata = await iscrizioneApi.cambiaStato(iscrizione.id, {
-      stato: nuovoStato,
-    });
-    setIscrizioni((precedente) =>
-      precedente.map((i) => (i.id === aggiornata.id ? aggiornata : i)),
-    );
+    try {
+      const aggiornata = await iscrizioneApi.cambiaStato(iscrizione.id, {
+        stato: nuovoStato,
+      });
+      setIscrizioni((precedente) =>
+        precedente.map((i) => (i.id === aggiornata.id ? aggiornata : i)),
+      );
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Cambio stato non riuscito",
+        "errore",
+      );
+    }
   }
 
   async function handleElimina(iscrizione: IscrizioneRespDTO) {
@@ -75,8 +85,16 @@ function IscrizioniAdmin() {
       )
     )
       return;
-    await iscrizioneApi.elimina(iscrizione.id);
-    caricaLista();
+    try {
+      await iscrizioneApi.elimina(iscrizione.id);
+      caricaLista();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   return (
@@ -111,8 +129,6 @@ function IscrizioniAdmin() {
           </Form.Select>
         </Col>
       </Row>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />

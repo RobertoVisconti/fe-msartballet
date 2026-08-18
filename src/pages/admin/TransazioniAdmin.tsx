@@ -6,7 +6,6 @@ import {
   Button,
   Modal,
   Form,
-  Alert,
   Spinner,
   Row,
   Col,
@@ -18,6 +17,7 @@ import { ospiteApi } from "@/api/ospiteApi";
 import { prodottoApi } from "@/api/prodottoApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
+import { useNotifica } from "@/components/common/ToastProvider";
 import type {
   TransazioneRespDTO,
   NewTransazioneDTO,
@@ -50,12 +50,11 @@ function TransazioniAdmin() {
   const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
 
   const [modaleAperto, setModaleAperto] = useState(false);
   const [form, setForm] = useState(formVuoto);
-  const [erroreForm, setErroreForm] = useState<string | null>(null);
   const [inCorso, setInCorso] = useState(false);
+  const notifica = useNotifica();
 
   function caricaTutto() {
     setCaricamento(true);
@@ -91,7 +90,7 @@ function TransazioniAdmin() {
           setSale(paginaSale.content);
         },
       )
-      .catch(() => setErrore("Impossibile caricare i dati"))
+      .catch(() => notifica("Impossibile caricare i dati", "errore"))
       .finally(() => setCaricamento(false));
   }
 
@@ -101,14 +100,12 @@ function TransazioniAdmin() {
 
   function apriCreazione() {
     setForm(formVuoto);
-    setErroreForm(null);
     setModaleAperto(true);
   }
 
   async function handleSubmit(evento: FormEvent) {
     evento.preventDefault();
     setInCorso(true);
-    setErroreForm(null);
     try {
       const dto: NewTransazioneDTO = {
         metodoPagamento: form.metodoPagamento,
@@ -123,8 +120,9 @@ function TransazioniAdmin() {
       caricaTutto();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      setErroreForm(
+      notifica(
         error.response?.data?.message ?? "Registrazione non riuscita",
+        "errore",
       );
     } finally {
       setInCorso(false);
@@ -133,8 +131,16 @@ function TransazioniAdmin() {
 
   async function handleElimina(transazione: TransazioneRespDTO) {
     if (!window.confirm("Eliminare questa transazione?")) return;
-    await transazioneApi.elimina(transazione.id);
-    caricaTutto();
+    try {
+      await transazioneApi.elimina(transazione.id);
+      caricaTutto();
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(
+        error.response?.data?.message ?? "Eliminazione non riuscita",
+        "errore",
+      );
+    }
   }
 
   function etichettaUtente(id: string): string {
@@ -170,8 +176,6 @@ function TransazioniAdmin() {
           + Nuova transazione
         </Button>
       </div>
-
-      {errore && <Alert variant="danger">{errore}</Alert>}
 
       {caricamento ? (
         <Spinner animation="border" />
@@ -220,7 +224,6 @@ function TransazioniAdmin() {
             <Modal.Title>Nuova transazione</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {erroreForm && <Alert variant="danger">{erroreForm}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Utente</Form.Label>
               <Form.Select
