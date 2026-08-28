@@ -2,8 +2,6 @@ import axiosInstance from "./axiosInstance";
 import type {
   LoginDTO,
   LoginRespDTO,
-  OspiteRegistrazioneDTO,
-  OspiteRespDTO,
   AttivazioneAccountDTO,
   RichiestaResetPasswordDTO,
   ResetPasswordDTO,
@@ -22,11 +20,6 @@ export const authApi = {
   login: (dto: LoginDTO) =>
     axiosInstance
       .post<LoginRespDTO>("/auth/login", dto)
-      .then((res) => res.data),
-
-  registraOspite: (dto: OspiteRegistrazioneDTO) =>
-    axiosInstance
-      .post<OspiteRespDTO>("/auth/register/ospite", dto)
       .then((res) => res.data),
 
   creaAllievo: (dto: NewAllievoDTO) =>

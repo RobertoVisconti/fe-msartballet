@@ -35,13 +35,6 @@ export interface LoginRespDTO {
   ruolo: RuoloUtente;
 }
 
-export interface OspiteRegistrazioneDTO {
-  nome: string;
-  cognome: string;
-  email: string;
-  dataDiNascita: string;
-}
-
 export interface NewAllievoDTO {
   nome: string;
   cognome: string;
@@ -79,17 +72,6 @@ export interface NewAdminDTO {
   email: string;
   dataDiNascita: string;
   imgProfilo?: string;
-}
-
-export interface OspiteRespDTO {
-  id: string;
-  nome: string;
-  cognome: string;
-  email: string;
-  dataDiNascita: string;
-  imgProfilo: string | null;
-  ruolo: RuoloUtente;
-  dataRegistrazione: string;
 }
 
 export interface AttivazioneAccountDTO {

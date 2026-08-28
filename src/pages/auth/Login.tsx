@@ -66,9 +66,6 @@ function Login() {
 
         <div className="auth-links">
           <Link to="/password-dimenticata">Password dimenticata?</Link>
-          <Link to="/registrati">
-            Non hai un account? Registrati come ospite
-          </Link>
         </div>
       </div>
     </Container>

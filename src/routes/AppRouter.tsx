@@ -3,7 +3,6 @@ import Layout from "@/components/layout/Layout";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "@/pages/auth/Login";
-import RegistrazioneOspite from "@/pages/auth/RegistrazioneOspite";
 import AttivaAccount from "@/pages/auth/AttivaAccount";
 import PasswordDimenticata from "@/pages/auth/PasswordDimenticata";
 import ResetPassword from "@/pages/auth/ResetPassword";
@@ -44,7 +43,6 @@ function AppRouter() {
     <Routes>
       {/* Auth: pagina intera, senza sidebar */}
       <Route path="/login" element={<Login />} />
-      <Route path="/registrati" element={<RegistrazioneOspite />} />
       <Route path="/attiva-account" element={<AttivaAccount />} />
       <Route path="/password-dimenticata" element={<PasswordDimenticata />} />
       <Route path="/reset-password" element={<ResetPassword />} />
