@@ -12,7 +12,6 @@ import {
 import type { AxiosError } from "axios";
 import { transazioneApi } from "@/api/transazioneApi";
 import { allievoApi } from "@/api/allievoApi";
-import { ospiteApi } from "@/api/ospiteApi";
 import { prodottoApi } from "@/api/prodottoApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
@@ -69,37 +68,25 @@ function TransazioniAdmin() {
   const notifica = useNotifica();
 
   // Dati per le select del modale: cambiano raramente, si caricano una
-  // sola volta e non seguono la paginazione della tabella.
+  // sola volta e non seguono la paginazione della tabella. Gli ospiti non
+  // compaiono come acquirenti: non possono effettuare acquisti.
   useEffect(() => {
     Promise.all([
       allievoApi.lista({ size: 100 }),
-      ospiteApi.lista({ size: 100 }),
       prodottoApi.lista({ size: 100 }),
       corsoApi.lista({ size: 100 }),
       salaApi.lista({ size: 100 }),
     ])
-      .then(
-        ([
-          paginaAllievi,
-          paginaOspiti,
-          paginaProdotti,
-          paginaCorsi,
-          paginaSale,
-        ]) => {
-          const allieviEtichettati = paginaAllievi.content.map((a) => ({
-            id: a.id,
-            etichetta: `${a.nome} ${a.cognome} (Allievo)`,
-          }));
-          const ospitiEtichettati = paginaOspiti.content.map((o) => ({
-            id: o.id,
-            etichetta: `${o.nome} ${o.cognome} (Ospite)`,
-          }));
-          setUtenti([...allieviEtichettati, ...ospitiEtichettati]);
-          setProdotti(paginaProdotti.content);
-          setCorsi(paginaCorsi.content);
-          setSale(paginaSale.content);
-        },
-      )
+      .then(([paginaAllievi, paginaProdotti, paginaCorsi, paginaSale]) => {
+        const allieviEtichettati = paginaAllievi.content.map((a) => ({
+          id: a.id,
+          etichetta: `${a.nome} ${a.cognome} (Allievo)`,
+        }));
+        setUtenti(allieviEtichettati);
+        setProdotti(paginaProdotti.content);
+        setCorsi(paginaCorsi.content);
+        setSale(paginaSale.content);
+      })
       .catch(() =>
         notifica("Impossibile caricare i dati di riferimento", "errore"),
       )
@@ -122,8 +109,8 @@ function TransazioniAdmin() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaTransazioni();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numeroPagina, tentativo]);
 
   function apriCreazione() {
