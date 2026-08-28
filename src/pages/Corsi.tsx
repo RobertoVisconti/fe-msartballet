@@ -3,8 +3,14 @@ import type { AxiosError } from "axios";
 import { useAppSelector } from "@/redux/store/hooks";
 import { corsoApi } from "@/api/corsoApi";
 import { iscrizioneApi } from "@/api/iscrizioneApi";
+import {
+  StatoCaricamento,
+  StatoErrore,
+  StatoVuoto,
+  AvvisoLimite,
+} from "@/components/common/StatiLista";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
-import type { ErrorsDTO } from "@/interfaces/common";
+import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const ETICHETTE_GIORNO: Record<string, string> = {
   LUNEDI: "Lunedì",
@@ -17,15 +23,23 @@ const ETICHETTE_GIORNO: Record<string, string> = {
 };
 
 function Corsi() {
-  const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
+  const [pagina, setPagina] = useState<Page<CorsoRespDTO> | null>(null);
   const [caricamento, setCaricamento] = useState(true);
+  const [errore, setErrore] = useState(false);
+  const [tentativo, setTentativo] = useState(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCaricamento(true);
     corsoApi
       .lista({ size: 50 })
-      .then((pagina) => setCorsi(pagina.content))
+      .then((risultato) => {
+        setPagina(risultato);
+        setErrore(false);
+      })
+      .catch(() => setErrore(true))
       .finally(() => setCaricamento(false));
-  }, []);
+  }, [tentativo]);
 
   return (
     <div className="catalogo-page">
@@ -36,13 +50,23 @@ function Corsi() {
       </p>
 
       {caricamento ? (
-        <p>Caricamento...</p>
+        <StatoCaricamento testo="Caricamento corsi..." />
+      ) : errore ? (
+        <StatoErrore
+          testo="Impossibile caricare i corsi."
+          onRiprova={() => setTentativo((t) => t + 1)}
+        />
+      ) : !pagina || pagina.empty ? (
+        <StatoVuoto testo="Nessun corso disponibile al momento." />
       ) : (
-        <div className="corsi-grid">
-          {corsi.map((corso, indice) => (
-            <CorsoCard key={corso.id} corso={corso} indice={indice} />
-          ))}
-        </div>
+        <>
+          <AvvisoLimite pagina={pagina} />
+          <div className="corsi-grid">
+            {pagina.content.map((corso, indice) => (
+              <CorsoCard key={corso.id} corso={corso} indice={indice} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
