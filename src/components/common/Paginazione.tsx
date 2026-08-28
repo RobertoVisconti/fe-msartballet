@@ -20,9 +20,16 @@ function costruisciSequenza(
   const sequenza: (number | "ellissi")[] = [];
 
   ordinate.forEach((numero, indice) => {
-    if (indice > 0 && numero - ordinate[indice - 1] > 1) {
-      sequenza.push("ellissi");
+    if (indice > 0) {
+      const salto = numero - ordinate[indice - 1];
+
+      if (salto === 2) {
+        sequenza.push(ordinate[indice - 1] + 1);
+      } else if (salto > 2) {
+        sequenza.push("ellissi");
+      }
     }
+
     sequenza.push(numero);
   });
 
