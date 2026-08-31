@@ -23,6 +23,7 @@ export interface AllievoRespDTO {
   ruolo: "ALLIEVO";
   dataRegistrazione: string;
   accountAttivo: boolean;
+  maiAttivato: boolean;
   numeroScarpetta: string | null;
   marcaScarpetta: string | null;
   haPunte: boolean | null;
@@ -74,6 +75,7 @@ export interface InsegnanteRespDTO {
   ruolo: "INSEGNANTE";
   dataRegistrazione: string;
   accountAttivo: boolean;
+  maiAttivato: boolean;
   biografia: string;
 }
 

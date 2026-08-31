@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Container, Table, Button, Badge } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
+import { authApi } from "@/api/authApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import Paginazione from "@/components/common/Paginazione";
 import {
@@ -24,6 +25,7 @@ function InsegnantiList() {
   const notifica = useNotifica();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     insegnanteApi
       .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
@@ -63,6 +65,16 @@ function InsegnantiList() {
     }
   }
 
+  async function reinviaLink(insegnante: InsegnanteRespDTO) {
+    try {
+      await authApi.reinviaAttivazione({ email: insegnante.email });
+      notifica("Link di attivazione reinviato", "successo");
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(error.response?.data?.message ?? "Invio non riuscito", "errore");
+    }
+  }
+
   return (
     <Container className="page-container">
       <h1>Gestione Insegnanti</h1>
@@ -96,20 +108,40 @@ function InsegnantiList() {
                   <td>{insegnante.email}</td>
                   <td>
                     <Badge
-                      bg={insegnante.accountAttivo ? "success" : "secondary"}
+                      bg={
+                        insegnante.maiAttivato
+                          ? "warning"
+                          : insegnante.accountAttivo
+                            ? "success"
+                            : "secondary"
+                      }
                     >
-                      {insegnante.accountAttivo ? "Attivo" : "Disattivato"}
+                      {insegnante.maiAttivato
+                        ? "Mai attivato"
+                        : insegnante.accountAttivo
+                          ? "Attivo"
+                          : "Disattivato"}
                     </Badge>
                   </td>
                   <td className="azioni-cella">
                     <Link to={`/admin/insegnanti/${insegnante.id}`}>Apri</Link>
-                    <Button
-                      size="sm"
-                      variant="outline-light"
-                      onClick={() => toggleAttivo(insegnante)}
-                    >
-                      {insegnante.accountAttivo ? "Disattiva" : "Riattiva"}
-                    </Button>
+                    {insegnante.maiAttivato ? (
+                      <Button
+                        size="sm"
+                        variant="outline-light"
+                        onClick={() => reinviaLink(insegnante)}
+                      >
+                        Reinvia link
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline-light"
+                        onClick={() => toggleAttivo(insegnante)}
+                      >
+                        {insegnante.accountAttivo ? "Disattiva" : "Riattiva"}
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
+import { authApi } from "@/api/authApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import Paginazione from "@/components/common/Paginazione";
 import {
@@ -37,6 +38,7 @@ function AllieviList() {
   const notifica = useNotifica();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     allievoApi
       .lista({
@@ -82,6 +84,16 @@ function AllieviList() {
         error.response?.data?.message ?? "Operazione non riuscita",
         "errore",
       );
+    }
+  }
+
+  async function reinviaLink(allievo: AllievoRespDTO) {
+    try {
+      await authApi.reinviaAttivazione({ email: allievo.email });
+      notifica("Link di attivazione reinviato", "successo");
+    } catch (err) {
+      const error = err as AxiosError<ErrorsDTO>;
+      notifica(error.response?.data?.message ?? "Invio non riuscito", "errore");
     }
   }
 
@@ -162,19 +174,41 @@ function AllieviList() {
                   <td>{allievo.cognome}</td>
                   <td>{allievo.email}</td>
                   <td>
-                    <Badge bg={allievo.accountAttivo ? "success" : "secondary"}>
-                      {allievo.accountAttivo ? "Attivo" : "Disattivato"}
+                    <Badge
+                      bg={
+                        allievo.maiAttivato
+                          ? "warning"
+                          : allievo.accountAttivo
+                            ? "success"
+                            : "secondary"
+                      }
+                    >
+                      {allievo.maiAttivato
+                        ? "Mai attivato"
+                        : allievo.accountAttivo
+                          ? "Attivo"
+                          : "Disattivato"}
                     </Badge>
                   </td>
                   <td className="azioni-cella">
                     <Link to={`/admin/allievi/${allievo.id}`}>Apri</Link>
-                    <Button
-                      size="sm"
-                      variant="outline-light"
-                      onClick={() => toggleAttivo(allievo)}
-                    >
-                      {allievo.accountAttivo ? "Disattiva" : "Riattiva"}
-                    </Button>
+                    {allievo.maiAttivato ? (
+                      <Button
+                        size="sm"
+                        variant="outline-light"
+                        onClick={() => reinviaLink(allievo)}
+                      >
+                        Reinvia link
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline-light"
+                        onClick={() => toggleAttivo(allievo)}
+                      >
+                        {allievo.accountAttivo ? "Disattiva" : "Riattiva"}
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}
