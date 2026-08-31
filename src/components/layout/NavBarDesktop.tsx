@@ -29,7 +29,7 @@ function NavBarDesktop() {
       </ul>
 
       <div className="navbar-footer-block">
-        <NavLink to="/prenota-prova" className="navbar-cta">
+        <NavLink to="/lezioni" className="navbar-cta">
           <span>Prenota una prova</span>
           <LuArrowRight size={16} />
         </NavLink>

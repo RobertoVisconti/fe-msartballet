@@ -53,7 +53,7 @@ function NavBarMobile() {
             ))}
           </ul>
           <NavLink
-            to="/prenota-prova"
+            to="/lezioni"
             onClick={() => setAperto(false)}
             className="navbar-cta"
           >
