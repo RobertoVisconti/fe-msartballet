@@ -37,6 +37,7 @@ import RegistraAllievo from "@/pages/admin/RegistraAllievo";
 import RegistraInsegnante from "@/pages/admin/RegistraInsegnante";
 import RegistraAdminUtente from "@/pages/admin/RegistraAdminUtente";
 import TransazioniAdmin from "@/pages/admin/TransazioniAdmin";
+import LaScuolaPagina from "@/pages/LaScuolaPagina";
 
 function AppRouter() {
   return (
@@ -50,7 +51,7 @@ function AppRouter() {
       {/* Sito pubblico + area personale: layout pubblico con sidebar/footer */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/la-scuola" element={<InArrivo titolo="La Scuola" />} />
+        <Route path="/la-scuola" element={<LaScuolaPagina />} />
         <Route path="/insegnanti" element={<Insegnanti />} />
         <Route path="/corsi" element={<Corsi />} />
         <Route path="/sale" element={<Sale />} />

@@ -1530,3 +1530,51 @@
   min-width: 280px;
   border: none;
 }
+
+/*  LA SCUOLA   */
+.scuola-pagina-header {
+  padding: 88px 72px 32px;
+}
+.scuola-pagina-header h1 {
+  font-size: clamp(34px, 3.6vw, 54px);
+  line-height: 1.02;
+  margin-bottom: 20px;
+}
+.scuola-pagina-lede {
+  max-width: 60ch;
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+.scuola-pagina-blocco {
+  padding: 40px 72px;
+  border-top: 1px solid var(--color-border);
+  max-width: 680px;
+}
+.scuola-pagina-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  margin-bottom: 10px;
+}
+.scuola-pagina-blocco h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.4vw, 32px);
+  margin-bottom: 14px;
+}
+.scuola-pagina-blocco p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.scuola-pagina-link {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.scuola-pagina-link:hover {
+  text-decoration: underline;
+}
