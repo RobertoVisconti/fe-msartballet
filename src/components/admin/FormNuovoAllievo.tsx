@@ -9,6 +9,7 @@ import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewAllievoDTO } from "@/interfaces/auth";
 import type { AllievoRespDTO, LarghezzaPunte } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 const OPZIONI_LARGHEZZA_PUNTE: LarghezzaPunte[] = [
   "A",
@@ -93,7 +94,7 @@ function FormNuovoAllievo() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Registrazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Registrazione non riuscita"),
         "errore",
       );
     } finally {

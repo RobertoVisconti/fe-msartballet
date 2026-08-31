@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 import { salaApi } from "@/api/salaApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -79,7 +80,7 @@ function SaleAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
         "errore",
       );
     } finally {
@@ -95,7 +96,7 @@ function SaleAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

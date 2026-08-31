@@ -15,6 +15,7 @@ import FormAllievo from "@/components/admin/FormAllievo";
 import FormInsegnante from "@/components/admin/FormInsegnante";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import type {
   UtenteMe,
   AllievoRespDTO,
@@ -170,7 +171,7 @@ function CambiaPassword() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Cambio password non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Cambio password non riuscito"),
         "errore",
       );
     } finally {

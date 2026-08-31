@@ -11,6 +11,7 @@ import {
 } from "@/components/common/StatiLista";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 const ETICHETTE_GIORNO: Record<string, string> = {
   LUNEDI: "Lunedì",
@@ -93,7 +94,7 @@ function CorsoCard({ corso, indice }: CorsoCardProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setMessaggioErrore(
-        error.response?.data?.message ?? "Iscrizione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Iscrizione non riuscita"),
       );
       setEsito("errore");
     } finally {

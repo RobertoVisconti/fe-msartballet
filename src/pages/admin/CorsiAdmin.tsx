@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import type { FormEvent } from "react";
 import {
   Container,
@@ -89,6 +90,7 @@ function CorsiAdmin() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaTutto();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tentativo]);
@@ -129,7 +131,7 @@ function CorsiAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
         "errore",
       );
     } finally {
@@ -145,7 +147,7 @@ function CorsiAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

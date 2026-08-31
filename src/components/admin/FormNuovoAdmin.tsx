@@ -8,6 +8,7 @@ import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewAdminDTO } from "@/interfaces/auth";
 import type { AdminRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 const FORM_VUOTO: NewAdminDTO = {
   nome: "",
@@ -35,7 +36,7 @@ function FormNuovoAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Registrazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Registrazione non riuscita"),
         "errore",
       );
     } finally {

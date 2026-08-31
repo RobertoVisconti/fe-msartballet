@@ -16,6 +16,7 @@ import { prodottoApi } from "@/api/prodottoApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
 import {
   StatoCaricamento,
@@ -136,7 +137,7 @@ function TransazioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Registrazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Registrazione non riuscita"),
         "errore",
       );
     } finally {
@@ -156,7 +157,7 @@ function TransazioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

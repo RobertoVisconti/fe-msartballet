@@ -4,6 +4,7 @@ import { Container, Table, Button, Modal, Form } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { spettacoloApi } from "@/api/spettacoloApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -83,7 +84,7 @@ function SpettacoliAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
         "errore",
       );
     } finally {
@@ -100,7 +101,7 @@ function SpettacoliAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

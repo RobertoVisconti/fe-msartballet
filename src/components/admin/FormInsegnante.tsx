@@ -9,6 +9,7 @@ import type {
 } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 interface FormInsegnanteProps {
   utente: InsegnanteRespDTO;
@@ -37,7 +38,7 @@ function FormInsegnante({ utente, onSalvato }: FormInsegnanteProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
         "errore",
       );
     } finally {

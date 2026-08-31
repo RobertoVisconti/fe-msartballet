@@ -9,6 +9,7 @@ import { useNotifica } from "@/components/common/ToastProvider";
 import type { NewInsegnanteDTO } from "@/interfaces/auth";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 const FORM_VUOTO: NewInsegnanteDTO = {
   nome: "",
@@ -37,7 +38,7 @@ function FormNuovoInsegnante() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Registrazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Registrazione non riuscita"),
         "errore",
       );
     } finally {

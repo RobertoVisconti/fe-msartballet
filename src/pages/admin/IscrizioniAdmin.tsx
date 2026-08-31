@@ -12,6 +12,7 @@ import type { AxiosError } from "axios";
 import { iscrizioneApi } from "@/api/iscrizioneApi";
 import { corsoApi } from "@/api/corsoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
 import {
   StatoCaricamento,
@@ -96,7 +97,7 @@ function IscrizioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Cambio stato non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Cambio stato non riuscito"),
         "errore",
       );
     }
@@ -119,7 +120,7 @@ function IscrizioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

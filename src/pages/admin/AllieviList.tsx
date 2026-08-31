@@ -13,6 +13,7 @@ import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
 import { authApi } from "@/api/authApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
 import {
   StatoCaricamento,
@@ -81,7 +82,7 @@ function AllieviList() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Operazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Operazione non riuscita"),
         "errore",
       );
     }
@@ -93,7 +94,10 @@ function AllieviList() {
       notifica("Link di attivazione reinviato", "successo");
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
-      notifica(error.response?.data?.message ?? "Invio non riuscito", "errore");
+      notifica(
+        estraiMessaggioErrore(error.response?.data, "Invio non riuscito"),
+        "errore",
+      );
     }
   }
 

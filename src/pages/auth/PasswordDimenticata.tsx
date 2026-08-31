@@ -6,6 +6,7 @@ import type { AxiosError } from "axios";
 import { authApi } from "@/api/authApi";
 import type { ErrorsDTO } from "@/interfaces/common";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 function PasswordDimenticata() {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ function PasswordDimenticata() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Richiesta non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Richiesta non riuscita"),
         "errore",
       );
     } finally {

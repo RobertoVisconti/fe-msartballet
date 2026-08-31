@@ -15,6 +15,7 @@ import { lezioneApi } from "@/api/lezioneApi";
 import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -114,7 +115,7 @@ function LezioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setErroreForm(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
       );
     } finally {
       setInCorso(false);
@@ -130,7 +131,7 @@ function LezioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

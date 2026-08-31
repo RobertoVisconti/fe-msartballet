@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 import { uploadApi } from "@/api/uploadApi";
 import type { ErrorsDTO } from "@/interfaces/common";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 interface CaricaImmagineProps {
   value?: string;
@@ -38,7 +39,7 @@ function CaricaImmagine({
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Caricamento non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Caricamento non riuscito"),
         "errore",
       );
     } finally {

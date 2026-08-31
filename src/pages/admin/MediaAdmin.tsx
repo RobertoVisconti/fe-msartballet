@@ -6,6 +6,7 @@ import { mediaApi } from "@/api/mediaApi";
 import { spettacoloApi } from "@/api/spettacoloApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -94,7 +95,7 @@ function MediaAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Salvataggio non riuscito",
+        estraiMessaggioErrore(error.response?.data, "Salvataggio non riuscito"),
         "errore",
       );
     } finally {
@@ -110,7 +111,7 @@ function MediaAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Eliminazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
         "errore",
       );
     }

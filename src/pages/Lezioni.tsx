@@ -9,6 +9,7 @@ import { prenotazioneApi } from "@/api/prenotazioneApi";
 import type { LezioneRespDTO } from "@/interfaces/lezione";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 
 function formattaData(iso: string): string {
   return new Date(iso).toLocaleDateString("it-IT", {
@@ -114,7 +115,7 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setMessaggioErrore(
-        error.response?.data?.message ?? "Prenotazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Prenotazione non riuscita"),
       );
       setEsito("errore");
     } finally {
@@ -139,7 +140,7 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setMessaggioErrore(
-        error.response?.data?.message ?? "Prenotazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Prenotazione non riuscita"),
       );
       setEsito("errore");
     } finally {

@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 import { allievoApi } from "@/api/allievoApi";
 import FormAllievo from "@/components/admin/FormAllievo";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import type { AllievoRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -36,7 +37,7 @@ function AllievoDettaglio() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Operazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Operazione non riuscita"),
         "errore",
       );
     }

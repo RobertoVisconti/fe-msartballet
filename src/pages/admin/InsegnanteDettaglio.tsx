@@ -5,6 +5,7 @@ import type { AxiosError } from "axios";
 import { insegnanteApi } from "@/api/insegnanteApi";
 import FormInsegnante from "@/components/admin/FormInsegnante";
 import { useNotifica } from "@/components/common/ToastProvider";
+import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { ErrorsDTO } from "@/interfaces/common";
 
@@ -36,7 +37,7 @@ function InsegnanteDettaglio() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        error.response?.data?.message ?? "Operazione non riuscita",
+        estraiMessaggioErrore(error.response?.data, "Operazione non riuscita"),
         "errore",
       );
     }
