@@ -31,6 +31,7 @@ import type {
 } from "@/interfaces/catalogo";
 import type { InsegnanteRespDTO } from "@/interfaces/utente";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 
 const LIVELLI: LivelloCorso[] = ["PRINCIPIANTE", "INTERMEDIO", "AVANZATO"];
 const GIORNI: { valore: GiornoSettimana; etichetta: string }[] = [
@@ -42,6 +43,10 @@ const GIORNI: { valore: GiornoSettimana; etichetta: string }[] = [
   { valore: "SABATO", etichetta: "Sabato" },
   { valore: "DOMENICA", etichetta: "Domenica" },
 ];
+
+function etichettaGiorno(giorno: GiornoSettimana): string {
+  return GIORNI.find((g) => g.valore === giorno)?.etichetta ?? giorno;
+}
 
 const formVuoto: NewCorsoDTO = {
   titolo: "",
@@ -147,7 +152,10 @@ function CorsiAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Eliminazione non riuscita",
+        ),
         "errore",
       );
     }
@@ -205,8 +213,8 @@ function CorsiAdmin() {
                   <td>{corso.titolo}</td>
                   <td>{corso.nomeDisciplina}</td>
                   <td>{corso.nomeInsegnante}</td>
-                  <td>{corso.giornoSettimana}</td>
-                  <td>€ {corso.prezzoMensile}</td>
+                  <td>{etichettaGiorno(corso.giornoSettimana)}</td>
+                  <td>{formattaPrezzo(corso.prezzoMensile)}</td>
                   <td className="azioni-cella">
                     <Button
                       size="sm"
