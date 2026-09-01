@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { prodottoApi } from "@/api/prodottoApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -62,7 +63,7 @@ function Store() {
                 <div className="prodotto-riga">
                   <h3>{prodotto.titolo}</h3>
                   <span className="prodotto-prezzo">
-                    € {prodotto.prezzoProdotto}
+                    {formattaPrezzo(prodotto.prezzoProdotto)}
                   </span>
                 </div>
                 <p className="prodotto-descrizione">

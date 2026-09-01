@@ -8,6 +8,7 @@ import {
 } from "@/components/common/StatiLista";
 import type { SalaRespDTO } from "@/interfaces/catalogo";
 import type { Page } from "@/interfaces/common";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 
 function Sale() {
   const [pagina, setPagina] = useState<Page<SalaRespDTO> | null>(null);
@@ -66,7 +67,9 @@ function Sale() {
                     {String(indice + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <p className="sala-prezzo">€ {sala.prezzoAffitto} / affitto</p>
+                <p className="sala-prezzo">
+                  {formattaPrezzo(sala.prezzoAffitto)} / affitto
+                </p>
                 <div className="sala-footer">
                   <span className="sala-affitta">→ Affitta</span>
                 </div>

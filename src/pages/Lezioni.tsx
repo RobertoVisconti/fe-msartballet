@@ -10,6 +10,7 @@ import type { LezioneRespDTO } from "@/interfaces/lezione";
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { ErrorsDTO } from "@/interfaces/common";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 
 function formattaData(iso: string): string {
   return new Date(iso).toLocaleDateString("it-IT", {
@@ -37,6 +38,7 @@ function Lezioni() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     lezioneApi
       .lista({
@@ -115,7 +117,10 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setMessaggioErrore(
-        estraiMessaggioErrore(error.response?.data, "Prenotazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Prenotazione non riuscita",
+        ),
       );
       setEsito("errore");
     } finally {
@@ -140,7 +145,10 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setMessaggioErrore(
-        estraiMessaggioErrore(error.response?.data, "Prenotazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Prenotazione non riuscita",
+        ),
       );
       setEsito("errore");
     } finally {
@@ -166,7 +174,10 @@ function LezioneRiga({ lezione }: LezioneRigaProps) {
         <span className="lezione-corso">{lezione.titoloCorso}</span>
         <span className="lezione-sala">{lezione.titoloSala}</span>
       </div>
-      <span className="lezione-prezzo">€ {lezione.prezzoLezione}</span>
+      <span className="lezione-prezzo">
+        {" "}
+        {formattaPrezzo(lezione.prezzoLezione)}
+      </span>
 
       {esito === "ok" ? (
         <span className="lezione-prenota-ok">Prenotata ✓</span>

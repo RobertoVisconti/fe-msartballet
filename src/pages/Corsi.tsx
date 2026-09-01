@@ -12,6 +12,7 @@ import {
 import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 
 const ETICHETTE_GIORNO: Record<string, string> = {
   LUNEDI: "Lunedì",
@@ -117,7 +118,9 @@ function CorsoCard({ corso, indice }: CorsoCardProps) {
           {ETICHETTE_GIORNO[corso.giornoSettimana]} ·{" "}
           {corso.oraInizio.slice(0, 5)}–{corso.oraFine.slice(0, 5)}
         </span>
-        <span className="corso-prezzo">€ {corso.prezzoMensile}/mese</span>
+        <span className="corso-prezzo">
+          {formattaPrezzo(corso.prezzoMensile)}/mese
+        </span>
       </div>
 
       {utente?.ruolo === "ALLIEVO" && (
