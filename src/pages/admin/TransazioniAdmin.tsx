@@ -18,6 +18,7 @@ import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import Paginazione from "@/components/common/Paginazione";
 import {
   StatoCaricamento,
@@ -247,7 +248,7 @@ function TransazioniAdmin() {
                   </td>
                   <td>{etichettaUtente(transazione.idUtente)}</td>
                   <td>{etichettaAcquisto(transazione)}</td>
-                  <td>€ {transazione.importo}</td>
+                  <td>{formattaPrezzo(transazione.importo)}</td>
                   <td>{transazione.metodoPagamento}</td>
                   <td className="azioni-cella">
                     <Button

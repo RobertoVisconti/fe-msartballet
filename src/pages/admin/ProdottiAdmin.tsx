@@ -6,6 +6,7 @@ import { prodottoApi } from "@/api/prodottoApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -144,7 +145,7 @@ function ProdottiAdmin() {
               {pagina.content.map((prodotto) => (
                 <tr key={prodotto.id}>
                   <td>{prodotto.titolo}</td>
-                  <td>€ {prodotto.prezzoProdotto}</td>
+                  <td>{formattaPrezzo(prodotto.prezzoProdotto)}</td>
                   <td className="azioni-cella">
                     <Button
                       size="sm"

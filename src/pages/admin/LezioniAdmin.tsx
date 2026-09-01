@@ -16,6 +16,7 @@ import { corsoApi } from "@/api/corsoApi";
 import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -193,7 +194,7 @@ function LezioniAdmin() {
                   </td>
                   <td>{lezione.titoloCorso}</td>
                   <td>{lezione.titoloSala}</td>
-                  <td>€ {lezione.prezzoLezione}</td>
+                  <td>{formattaPrezzo(lezione.prezzoLezione)}</td>
                   <td className="azioni-cella">
                     <Button
                       size="sm"

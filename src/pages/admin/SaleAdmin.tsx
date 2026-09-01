@@ -6,6 +6,7 @@ import { salaApi } from "@/api/salaApi";
 import CaricaImmagine from "@/components/admin/CaricaImmagine";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
+import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -139,7 +140,7 @@ function SaleAdmin() {
               {pagina.content.map((sala) => (
                 <tr key={sala.id}>
                   <td>{sala.titolo}</td>
-                  <td>€ {sala.prezzoAffitto}</td>
+                  <td>{formattaPrezzo(sala.prezzoAffitto)}</td>
                   <td className="azioni-cella">
                     <Button
                       size="sm"
