@@ -8,6 +8,7 @@ import {
   Form,
   Row,
   Col,
+  Alert,
 } from "react-bootstrap";
 import type { AxiosError } from "axios";
 import { transazioneApi } from "@/api/transazioneApi";
@@ -137,7 +138,10 @@ function TransazioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Registrazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Registrazione non riuscita",
+        ),
         "errore",
       );
     } finally {
@@ -157,7 +161,10 @@ function TransazioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Eliminazione non riuscita",
+        ),
         "errore",
       );
     }
@@ -188,6 +195,8 @@ function TransazioniAdmin() {
     return sale.map((s) => ({ id: s.id, etichetta: s.titolo }));
   }
 
+  const nessunUtente = riferimentiCaricati && utenti.length === 0;
+
   return (
     <Container className="page-container">
       <div className="dettaglio-intestazione">
@@ -195,11 +204,16 @@ function TransazioniAdmin() {
         <Button
           className="btn-accent"
           onClick={apriCreazione}
-          disabled={!riferimentiCaricati}
+          disabled={!riferimentiCaricati || nessunUtente}
         >
           + Nuova transazione
         </Button>
       </div>
+      {nessunUtente && (
+        <Alert variant="warning">
+          Serve almeno un allievo prima di poter registrare una transazione.
+        </Alert>
+      )}
 
       {caricamento ? (
         <StatoCaricamento testo="Caricamento transazioni..." />
@@ -252,7 +266,6 @@ function TransazioniAdmin() {
           <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
         </>
       )}
-
       <Modal show={modaleAperto} onHide={() => setModaleAperto(false)} centered>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>

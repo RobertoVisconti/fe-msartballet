@@ -38,6 +38,7 @@ import RegistraInsegnante from "@/pages/admin/RegistraInsegnante";
 import RegistraAdminUtente from "@/pages/admin/RegistraAdminUtente";
 import TransazioniAdmin from "@/pages/admin/TransazioniAdmin";
 import LaScuolaPagina from "@/pages/LaScuolaPagina";
+import PaginaNonTrovata from "@/pages/PaginaNonTrovata";
 
 function AppRouter() {
   return (
@@ -68,7 +69,7 @@ function AppRouter() {
           <Route path="/il-mio-profilo" element={<Profilo />} />
         </Route>
 
-        <Route path="*" element={<InArrivo titolo="Pagina non trovata" />} />
+        <Route path="*" element={<PaginaNonTrovata />} />
       </Route>
 
       {/* Area Admin: layout dedicato con sidebar propria */}
