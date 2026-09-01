@@ -1,3 +1,4 @@
+/* #region =========================== TOKENS =========================== */
 :root {
   /* Colori */
   --color-bg: #000000;
@@ -61,8 +62,9 @@
   --transition-filter: filter 0.5s ease;
   --transition-scale: transform 0.6s ease;
 }
+/* #endregion */
 
-/* Modal */
+/* #region =========================== MODAL ============================ */
 
 .modal-content {
   background: var(--color-bg);
@@ -83,8 +85,9 @@
 .modal-backdrop.show {
   opacity: 0.7;
 }
+/* #endregion */
 
-/* Form */
+/* #region ============================ FORM ============================ */
 
 .form-control,
 .form-select {
@@ -163,8 +166,9 @@
   background: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
 }
+/* #endregion */
 
-/* Layout - impalcatura a due colonne ( sidebar + contenuto ) */
+/* #region === LAYOUT - IMPALCATURA A DUE COLONNE ( SIDEBAR + CONTENUTO ) === */
 
 .app-shell {
   display: flex;
@@ -182,8 +186,9 @@
 .app-main main {
   flex: 1 1 auto;
 }
+/* #endregion */
 
-/* Sidebar Desktop */
+/* #region ====================== SIDEBAR DESKTOP ======================= */
 
 .navbar-desktop {
   display: none;
@@ -269,8 +274,9 @@
   flex-direction: column;
   gap: 18px;
 }
+/* #endregion */
 
-/* Bottone prenota */
+/* #region ====================== BOTTONE PRENOTA ======================= */
 
 .navbar-cta {
   display: flex;
@@ -299,8 +305,9 @@
   line-height: 2;
   margin: 0;
 }
+/* #endregion */
 
-/* Navbar Mobile */
+/* #region ======================= NAVBAR MOBILE ======================== */
 
 .navbar-mobile-bar {
   display: flex;
@@ -339,8 +346,9 @@
 .navbar-offcanvas .navbar-cta {
   margin-top: 24px;
 }
+/* #endregion */
 
-/* Footer */
+/* #region =========================== FOOTER =========================== */
 
 .site-footer {
   background: var(--color-bg);
@@ -389,8 +397,9 @@
   letter-spacing: 0.1em;
   color: var(--color-text-min);
 }
+/* #endregion */
 
-/* Pagine in arrivo */
+/* #region ====================== PAGINE IN ARRIVO ====================== */
 
 .in-arrivo {
   padding: 88px clamp(32px, 5vw, 72px);
@@ -404,8 +413,9 @@
 .in-arrivo p {
   color: var(--color-text-secondary);
 }
+/* #endregion */
 
-/* Profilo - Pagine Admin */
+/* #region =================== PROFILO - PAGINE ADMIN =================== */
 
 .page-container {
   padding: 56px clamp(24px, 4vw, 72px);
@@ -425,8 +435,9 @@
   color: var(--color-text-tertiary);
   font-size: var(--fs-body-sm);
 }
+/* #endregion */
 
-/* Profilo / Allievo  Profilo + FormAllievo */
+/* #region ========== PROFILO / ALLIEVO  PROFILO + FORMALLIEVO ========== */
 
 .profilo-form h2,
 .cambia-password h2 {
@@ -470,8 +481,9 @@
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
+/* #endregion */
 
-/* Admin - Tabelle */
+/* #region ====================== ADMIN - TABELLE ======================= */
 
 .filtri-riga {
   margin-bottom: 24px;
@@ -571,8 +583,9 @@
 .avviso-limite {
   margin-bottom: var(--space-8);
 }
+/* #endregion */
 
-/* Allievo - Dettaglio */
+/* #region ==================== ALLIEVO - DETTAGLIO ===================== */
 
 .link-indietro {
   padding-left: 0;
@@ -593,8 +606,9 @@
   align-items: center;
   gap: 12px;
 }
+/* #endregion */
 
-/* Indice Admin */
+/* #region ======================== INDICE ADMIN ======================== */
 
 .registrazione-scelta {
   padding: 56px clamp(24px, 4vw, 72px);
@@ -641,8 +655,9 @@
   background: var(--color-accent-tint-weak);
   border-color: var(--color-accent);
 }
+/* #endregion */
 
-/* Utility Immagini */
+/* #region ====================== UTILITY IMMAGINI ====================== */
 
 .img-hover-color {
   filter: grayscale(100%);
@@ -654,8 +669,9 @@
   filter: grayscale(0%);
   transform: scale(1.04);
 }
+/* #endregion */
 
-/* Home - Hero */
+/* #region ======================== HOME - HERO ========================= */
 
 .hero-section {
   display: grid;
@@ -788,8 +804,9 @@
   color: var(--color-accent);
   border-color: var(--color-accent);
 }
+/* #endregion */
 
-/* Home - La Scuola */
+/* #region ====================== HOME - LA SCUOLA ====================== */
 
 .scuola-section {
   display: grid;
@@ -890,8 +907,9 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+/* #endregion */
 
-/* Home - Catalogo */
+/* #region ====================== HOME - CATALOGO ======================= */
 
 .catalogo-page {
   padding: 88px clamp(32px, 5vw, 72px);
@@ -909,8 +927,9 @@
   max-width: 58ch;
   margin-bottom: 48px;
 }
+/* #endregion */
 
-/* Corsi */
+/* #region =========================== CORSI ============================ */
 
 .corsi-grid {
   display: grid;
@@ -972,8 +991,9 @@
   color: var(--color-accent);
   font-weight: 700;
 }
+/* #endregion */
 
-/* Sale */
+/* #region ============================ SALE ============================ */
 
 .sale-grid {
   display: grid;
@@ -1035,8 +1055,9 @@
   font-size: 13px;
   font-weight: 700;
 }
+/* #endregion */
 
-/* Store */
+/* #region =========================== STORE ============================ */
 
 .store-grid {
   display: grid;
@@ -1078,8 +1099,9 @@
   color: var(--color-text-tertiary);
   margin-top: 6px;
 }
+/* #endregion */
 
-/* Contatti */
+/* #region ========================== CONTATTI ========================== */
 
 .contatti-section {
   background: var(--color-accent);
@@ -1166,8 +1188,9 @@
   color: #000;
   border-color: #000;
 }
+/* #endregion */
 
-/* Insegnanti */
+/* #region ========================= INSEGNANTI ========================= */
 
 .insegnanti-header {
   padding: 88px 72px 48px;
@@ -1247,8 +1270,9 @@
   line-height: 1.7;
   color: var(--color-text-tertiary);
 }
+/* #endregion */
 
-/* Galleria */
+/* #region ========================== GALLERIA ========================== */
 
 .galleria-grid {
   display: grid;
@@ -1291,8 +1315,9 @@
 .galleria-img.in-hover {
   transform: scale(1.06);
 }
+/* #endregion */
 
-/* Lezioni */
+/* #region ========================== LEZIONI =========================== */
 
 .lezioni-filtro {
   max-width: 320px;
@@ -1360,8 +1385,9 @@
   font-weight: 700;
   font-size: 14px;
 }
+/* #endregion */
 
-/* Iscrizione */
+/* #region ========================= ISCRIZIONE ========================= */
 
 .corso-iscrizione {
   margin-top: 12px;
@@ -1402,15 +1428,17 @@
   color: #e08a8a;
   font-size: 12px;
 }
+/* #endregion */
 
-/* Cambio stato iscrizione admin */
+/* #region =============== CAMBIO STATO ISCRIZIONE ADMIN ================ */
 
 .azioni-select-stato {
   width: auto;
   min-width: 150px;
 }
+/* #endregion */
 
-/*Prenotazione */
+/* #region ======================== PRENOTAZIONE ======================== */
 
 .lezione-prenota {
   display: flex;
@@ -1485,8 +1513,9 @@
 .lezione-prenota-annulla:hover {
   color: var(--color-text-primary);
 }
+/* #endregion */
 
-/* Carica Immagine */
+/* #region ====================== CARICA IMMAGINE ======================= */
 
 .carica-immagine-anteprima {
   display: block;
@@ -1518,8 +1547,9 @@
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
+/* #endregion */
 
-/* Toast notifiche */
+/* #region ====================== TOAST NOTIFICHE ======================= */
 
 .toast-container-app {
   z-index: 2000;
@@ -1530,8 +1560,9 @@
   min-width: 280px;
   border: none;
 }
+/* #endregion */
 
-/*  LA SCUOLA   */
+/* #region ===================== LA SCUOLA (PAGINA) ===================== */
 .scuola-pagina-header {
   padding: 88px 72px 32px;
 }
@@ -1578,3 +1609,4 @@
 .scuola-pagina-link:hover {
   text-decoration: underline;
 }
+/* #endregion */
