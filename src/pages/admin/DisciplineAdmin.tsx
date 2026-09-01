@@ -47,6 +47,7 @@ function DisciplineAdmin() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaLista();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tentativo]);
@@ -94,7 +95,10 @@ function DisciplineAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Eliminazione non riuscita",
+        ),
         "errore",
       );
     }

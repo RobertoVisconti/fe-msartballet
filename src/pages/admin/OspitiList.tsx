@@ -23,6 +23,7 @@ function OspitiList() {
   const notifica = useNotifica();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     ospiteApi
       .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })

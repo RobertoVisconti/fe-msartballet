@@ -72,6 +72,7 @@ function IscrizioniAdmin() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaLista();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtroCorso, filtroStato, numeroPagina, tentativo]);
@@ -97,7 +98,10 @@ function IscrizioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Cambio stato non riuscito"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Cambio stato non riuscito",
+        ),
         "errore",
       );
     }
@@ -120,7 +124,10 @@ function IscrizioniAdmin() {
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
-        estraiMessaggioErrore(error.response?.data, "Eliminazione non riuscita"),
+        estraiMessaggioErrore(
+          error.response?.data,
+          "Eliminazione non riuscita",
+        ),
         "errore",
       );
     }
