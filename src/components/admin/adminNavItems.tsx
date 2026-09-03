@@ -15,6 +15,7 @@ import {
   LuClipboardList,
   LuTicket,
   LuWallet,
+  LuShieldCheck,
 } from "react-icons/lu";
 
 export interface VoceMenuAdmin {
@@ -29,6 +30,7 @@ export const vociMenuAdmin: VoceMenuAdmin[] = [
   { path: "/admin/allievi", label: "Allievi", icon: LuGraduationCap },
   { path: "/admin/insegnanti", label: "Insegnanti", icon: LuUsers },
   { path: "/admin/ospiti", label: "Ospiti", icon: LuUserRound },
+  { path: "/admin/admins", label: "Admin", icon: LuShieldCheck },
   { path: "/admin/discipline", label: "Discipline", icon: LuBookOpen },
   { path: "/admin/sale", label: "Sale", icon: LuDoorOpen },
   { path: "/admin/prodotti", label: "Prodotti", icon: LuShoppingBag },

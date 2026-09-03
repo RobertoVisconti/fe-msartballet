@@ -109,6 +109,8 @@ export interface AdminRespDTO {
   ruolo: "ADMIN";
   dataRegistrazione: string;
   accountAttivo: boolean;
+  maiAttivato: boolean;
+  protetto: boolean;
 }
 
 export type UtenteMe =

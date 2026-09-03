@@ -15,6 +15,7 @@ import InsegnantiList from "@/pages/admin/InsegnantiList";
 import InsegnanteDettaglio from "@/pages/admin/InsegnanteDettaglio";
 import OspitiList from "@/pages/admin/OspitiList";
 import OspiteDettaglio from "@/pages/admin/OspiteDettaglio";
+import GestioneAdmin from "@/pages/admin/GestioneAdmin";
 import Contatti from "@/pages/Contatti";
 import Home from "@/pages/Home";
 import Corsi from "@/pages/Corsi";
@@ -98,6 +99,7 @@ function AppRouter() {
           />
           <Route path="/admin/ospiti" element={<OspitiList />} />
           <Route path="/admin/ospiti/:id" element={<OspiteDettaglio />} />
+          <Route path="/admin/admins" element={<GestioneAdmin />} />
           <Route path="/admin/discipline" element={<DisciplineAdmin />} />
           <Route path="/admin/sale" element={<SaleAdmin />} />
           <Route path="/admin/prodotti" element={<ProdottiAdmin />} />
