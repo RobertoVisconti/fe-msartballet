@@ -25,6 +25,11 @@ export const iscrizioneApi = {
       .get<Page<IscrizioneRespDTO>>("/iscrizioni", { params: filtri })
       .then((res) => res.data),
 
+  mie: (filtri: { page?: number; size?: number }) =>
+    axiosInstance
+      .get<Page<IscrizioneRespDTO>>("/iscrizioni/mie", { params: filtri })
+      .then((res) => res.data),
+
   cambiaStato: (id: string, dto: CambiaStatoIscrizioneDTO) =>
     axiosInstance
       .patch<IscrizioneRespDTO>(`/iscrizioni/${id}/stato`, dto)

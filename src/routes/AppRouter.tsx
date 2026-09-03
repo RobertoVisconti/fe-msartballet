@@ -8,6 +8,8 @@ import PasswordDimenticata from "@/pages/auth/PasswordDimenticata";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import InArrivo from "@/pages/InArrivo";
 import Profilo from "@/pages/Profilo";
+import LeMieIscrizioni from "@/pages/LeMieIscrizioni";
+import LeMiePrenotazioni from "@/pages/LeMiePrenotazioni";
 import AllievoDettaglio from "@/pages/admin/AllievoDettaglio";
 import AllieviList from "@/pages/admin/AllieviList";
 import AdminHome from "@/pages/admin/AdminHome";
@@ -68,6 +70,11 @@ function AppRouter() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/il-mio-profilo" element={<Profilo />} />
+        </Route>
+
+        <Route element={<ProtectedRoute ruoliConsentiti={["ALLIEVO"]} />}>
+          <Route path="/le-mie-iscrizioni" element={<LeMieIscrizioni />} />
+          <Route path="/le-mie-prenotazioni" element={<LeMiePrenotazioni />} />
         </Route>
 
         <Route path="*" element={<PaginaNonTrovata />} />

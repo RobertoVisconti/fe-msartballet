@@ -11,6 +11,7 @@ import {
 import type { AxiosError } from "axios";
 import { prenotazioneApi } from "@/api/prenotazioneApi";
 import { lezioneApi } from "@/api/lezioneApi";
+import { corsoApi } from "@/api/corsoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
@@ -24,6 +25,7 @@ import type {
   StatoPrenotazione,
 } from "@/interfaces/prenotazione";
 import type { LezioneRespDTO } from "@/interfaces/lezione";
+import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
 
 const DIMENSIONE_PAGINA = 20;
@@ -46,8 +48,12 @@ function PrenotazioniAdmin() {
   const [pagina, setPagina] = useState<Page<PrenotazioneRespDTO> | null>(null);
   const [numeroPagina, setNumeroPagina] = useState(0);
   const [lezioni, setLezioni] = useState<LezioneRespDTO[]>([]);
+  const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
   const [filtroLezione, setFiltroLezione] = useState("");
   const [filtroStato, setFiltroStato] = useState("");
+  const [filtroCorso, setFiltroCorso] = useState("");
+  const [dataDa, setDataDa] = useState("");
+  const [dataA, setDataA] = useState("");
   const [caricamento, setCaricamento] = useState(true);
   const [errore, setErrore] = useState(false);
   const [tentativo, setTentativo] = useState(0);
@@ -57,6 +63,7 @@ function PrenotazioniAdmin() {
     lezioneApi
       .lista({ size: 100 })
       .then((pagina) => setLezioni(pagina.content));
+    corsoApi.lista({ size: 100 }).then((pagina) => setCorsi(pagina.content));
   }, []);
 
   function caricaLista() {
@@ -65,6 +72,9 @@ function PrenotazioniAdmin() {
       .lista({
         idLezione: filtroLezione || undefined,
         stato: filtroStato || undefined,
+        idCorso: filtroCorso || undefined,
+        dataDa: dataDa || undefined,
+        dataA: dataA || undefined,
         page: numeroPagina,
         size: DIMENSIONE_PAGINA,
       })
@@ -83,7 +93,15 @@ function PrenotazioniAdmin() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaLista();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtroLezione, filtroStato, numeroPagina, tentativo]);
+  }, [
+    filtroLezione,
+    filtroStato,
+    filtroCorso,
+    dataDa,
+    dataA,
+    numeroPagina,
+    tentativo,
+  ]);
 
   async function cambiaStato(
     prenotazione: PrenotazioneRespDTO,
@@ -147,7 +165,12 @@ function PrenotazioniAdmin() {
     return `${lezione.titoloCorso} — ${new Date(lezione.dataOraInizio).toLocaleString("it-IT")}`;
   }
 
-  const filtriAttivi = filtroLezione !== "" || filtroStato !== "";
+  const filtriAttivi =
+    filtroLezione !== "" ||
+    filtroStato !== "" ||
+    filtroCorso !== "" ||
+    dataDa !== "" ||
+    dataA !== "";
 
   return (
     <Container className="page-container">
@@ -186,6 +209,51 @@ function PrenotazioniAdmin() {
               </option>
             ))}
           </Form.Select>
+        </Col>
+      </Row>
+
+      <Row className="filtri-riga">
+        <Col md={4}>
+          <Form.Select
+            value={filtroCorso}
+            onChange={(e) => {
+              setNumeroPagina(0);
+              setFiltroCorso(e.target.value);
+            }}
+          >
+            <option value="">Tutti i corsi</option>
+            {corsi.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.titolo}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Dal</Form.Label>
+            <Form.Control
+              type="date"
+              value={dataDa}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setDataDa(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Al</Form.Label>
+            <Form.Control
+              type="date"
+              value={dataA}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setDataA(e.target.value);
+              }}
+            />
+          </Form.Group>
         </Col>
       </Row>
 

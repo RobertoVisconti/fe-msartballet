@@ -11,6 +11,9 @@ export interface FiltriPrenotazioni {
   idUtente?: string;
   idLezione?: string;
   stato?: string;
+  idCorso?: string;
+  dataDa?: string;
+  dataA?: string;
   page?: number;
   size?: number;
 }
@@ -29,6 +32,11 @@ export const prenotazioneApi = {
   lista: (filtri: FiltriPrenotazioni) =>
     axiosInstance
       .get<Page<PrenotazioneRespDTO>>("/prenotazioni", { params: filtri })
+      .then((res) => res.data),
+
+  mie: (filtri: { page?: number; size?: number }) =>
+    axiosInstance
+      .get<Page<PrenotazioneRespDTO>>("/prenotazioni/mie", { params: filtri })
       .then((res) => res.data),
 
   cambiaStato: (id: string, dto: CambiaStatoPrenotazioneDTO) =>

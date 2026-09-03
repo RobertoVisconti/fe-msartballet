@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Offcanvas } from "react-bootstrap";
-import { LuMenu, LuArrowRight } from "react-icons/lu";
+import {
+  LuMenu,
+  LuArrowRight,
+  LuUser,
+  LuBookOpen,
+  LuTicket,
+} from "react-icons/lu";
 import { vociMenu } from "./navItems";
+import { useAppSelector } from "@/redux/store/hooks";
 
 function NavBarMobile() {
   const [aperto, setAperto] = useState(false);
+  const { isAuthenticated, utente } = useAppSelector((state) => state.auth);
 
   return (
     <>
@@ -52,6 +60,55 @@ function NavBarMobile() {
               </li>
             ))}
           </ul>
+
+          {isAuthenticated && utente && (
+            <>
+              <span className="navbar-section-label">Area personale</span>
+              <ul className="navbar-menu">
+                <li>
+                  <NavLink
+                    to="/il-mio-profilo"
+                    onClick={() => setAperto(false)}
+                    className={({ isActive }) =>
+                      isActive ? "navbar-link active" : "navbar-link"
+                    }
+                  >
+                    <LuUser size={17} strokeWidth={1.8} />
+                    <span>Il mio profilo</span>
+                  </NavLink>
+                </li>
+                {utente.ruolo === "ALLIEVO" && (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/le-mie-iscrizioni"
+                        onClick={() => setAperto(false)}
+                        className={({ isActive }) =>
+                          isActive ? "navbar-link active" : "navbar-link"
+                        }
+                      >
+                        <LuBookOpen size={17} strokeWidth={1.8} />
+                        <span>Le mie iscrizioni</span>
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/le-mie-prenotazioni"
+                        onClick={() => setAperto(false)}
+                        className={({ isActive }) =>
+                          isActive ? "navbar-link active" : "navbar-link"
+                        }
+                      >
+                        <LuTicket size={17} strokeWidth={1.8} />
+                        <span>Le mie prenotazioni</span>
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </>
+          )}
+
           <NavLink
             to="/lezioni"
             onClick={() => setAperto(false)}
