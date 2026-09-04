@@ -1,8 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft, LuLogOut } from "react-icons/lu";
 import { vociMenuAdmin } from "./adminNavItems";
+import { useAppDispatch } from "@/redux/store/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 function AdminSidebar() {
+  const dispatch = useAppDispatch();
+
   return (
     <nav className="navbar-desktop">
       <div className="navbar-logo">
@@ -26,6 +30,19 @@ function AdminSidebar() {
             </NavLink>
           </li>
         ))}
+      </ul>
+
+      <ul className="navbar-menu">
+        <li>
+          <button
+            type="button"
+            className="navbar-link"
+            onClick={() => dispatch(logout())}
+          >
+            <LuLogOut size={17} strokeWidth={1.8} />
+            <span>Esci</span>
+          </button>
+        </li>
       </ul>
 
       <div className="navbar-footer-block">

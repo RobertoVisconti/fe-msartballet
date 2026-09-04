@@ -7,12 +7,16 @@ import {
   LuUser,
   LuBookOpen,
   LuTicket,
+  LuLogOut,
+  LuLayoutDashboard,
 } from "react-icons/lu";
 import { vociMenu } from "./navItems";
-import { useAppSelector } from "@/redux/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 function NavBarMobile() {
   const [aperto, setAperto] = useState(false);
+  const dispatch = useAppDispatch();
   const { isAuthenticated, utente } = useAppSelector((state) => state.auth);
 
   return (
@@ -65,6 +69,20 @@ function NavBarMobile() {
             <>
               <span className="navbar-section-label">Area personale</span>
               <ul className="navbar-menu">
+                {utente.ruolo === "ADMIN" && (
+                  <li>
+                    <NavLink
+                      to="/admin"
+                      onClick={() => setAperto(false)}
+                      className={({ isActive }) =>
+                        isActive ? "navbar-link active" : "navbar-link"
+                      }
+                    >
+                      <LuLayoutDashboard size={17} strokeWidth={1.8} />
+                      <span>Area Admin</span>
+                    </NavLink>
+                  </li>
+                )}
                 <li>
                   <NavLink
                     to="/il-mio-profilo"
@@ -105,6 +123,19 @@ function NavBarMobile() {
                     </li>
                   </>
                 )}
+                <li>
+                  <button
+                    type="button"
+                    className="navbar-link"
+                    onClick={() => {
+                      dispatch(logout());
+                      setAperto(false);
+                    }}
+                  >
+                    <LuLogOut size={17} strokeWidth={1.8} />
+                    <span>Esci</span>
+                  </button>
+                </li>
               </ul>
             </>
           )}

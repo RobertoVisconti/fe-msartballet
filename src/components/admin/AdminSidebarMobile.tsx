@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Offcanvas } from "react-bootstrap";
-import { LuMenu, LuArrowLeft } from "react-icons/lu";
+import { LuMenu, LuArrowLeft, LuLogOut } from "react-icons/lu";
 import { vociMenuAdmin } from "./adminNavItems";
+import { useAppDispatch } from "@/redux/store/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 function AdminSidebarMobile() {
   const [aperto, setAperto] = useState(false);
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -52,6 +55,23 @@ function AdminSidebarMobile() {
               </li>
             ))}
           </ul>
+
+          <ul className="navbar-menu">
+            <li>
+              <button
+                type="button"
+                className="navbar-link"
+                onClick={() => {
+                  dispatch(logout());
+                  setAperto(false);
+                }}
+              >
+                <LuLogOut size={17} strokeWidth={1.8} />
+                <span>Esci</span>
+              </button>
+            </li>
+          </ul>
+
           <NavLink
             to="/"
             onClick={() => setAperto(false)}

@@ -1,9 +1,18 @@
 import { NavLink } from "react-router-dom";
-import { LuArrowRight, LuUser, LuBookOpen, LuTicket } from "react-icons/lu";
+import {
+  LuArrowRight,
+  LuUser,
+  LuBookOpen,
+  LuTicket,
+  LuLogOut,
+  LuLayoutDashboard,
+} from "react-icons/lu";
 import { vociMenu } from "./navItems";
-import { useAppSelector } from "@/redux/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { logout } from "@/redux/slices/authSlice";
 
 function NavBarDesktop() {
+  const dispatch = useAppDispatch();
   const { isAuthenticated, utente } = useAppSelector((state) => state.auth);
 
   return (
@@ -35,6 +44,19 @@ function NavBarDesktop() {
         <>
           <span className="navbar-section-label">Area personale</span>
           <ul className="navbar-menu">
+            {utente.ruolo === "ADMIN" && (
+              <li>
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    isActive ? "navbar-link active" : "navbar-link"
+                  }
+                >
+                  <LuLayoutDashboard size={17} strokeWidth={1.8} />
+                  <span>Area Admin</span>
+                </NavLink>
+              </li>
+            )}
             <li>
               <NavLink
                 to="/il-mio-profilo"
@@ -72,6 +94,16 @@ function NavBarDesktop() {
                 </li>
               </>
             )}
+            <li>
+              <button
+                type="button"
+                className="navbar-link"
+                onClick={() => dispatch(logout())}
+              >
+                <LuLogOut size={17} strokeWidth={1.8} />
+                <span>Esci</span>
+              </button>
+            </li>
           </ul>
         </>
       )}
