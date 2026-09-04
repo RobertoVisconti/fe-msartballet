@@ -29,6 +29,7 @@ function LeMieIscrizioni() {
   const [tentativo, setTentativo] = useState(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     iscrizioneApi
       .mie({ page: numeroPagina, size: DIMENSIONE_PAGINA })
@@ -38,7 +39,6 @@ function LeMieIscrizioni() {
       })
       .catch(() => setErrore(true))
       .finally(() => setCaricamento(false));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [numeroPagina, tentativo]);
 
   return (

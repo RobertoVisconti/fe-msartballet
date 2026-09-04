@@ -25,9 +25,7 @@ const BADGE_STATO: Record<StatoPrenotazione, string> = {
 };
 
 function LeMiePrenotazioni() {
-  const [pagina, setPagina] = useState<Page<PrenotazioneRespDTO> | null>(
-    null,
-  );
+  const [pagina, setPagina] = useState<Page<PrenotazioneRespDTO> | null>(null);
   const [numeroPagina, setNumeroPagina] = useState(0);
   const [lezioni, setLezioni] = useState<LezioneRespDTO[]>([]);
   const [caricamento, setCaricamento] = useState(true);
@@ -41,6 +39,7 @@ function LeMiePrenotazioni() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
     prenotazioneApi
       .mie({ page: numeroPagina, size: DIMENSIONE_PAGINA })
@@ -50,7 +49,6 @@ function LeMiePrenotazioni() {
       })
       .catch(() => setErrore(true))
       .finally(() => setCaricamento(false));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [numeroPagina, tentativo]);
 
   function etichettaLezione(idLezione: string): string {
@@ -87,9 +85,9 @@ function LeMiePrenotazioni() {
                 <tr key={prenotazione.id}>
                   <td>{etichettaLezione(prenotazione.idLezione)}</td>
                   <td>
-                    {new Date(
-                      prenotazione.dataPrenotazione,
-                    ).toLocaleDateString("it-IT")}
+                    {new Date(prenotazione.dataPrenotazione).toLocaleDateString(
+                      "it-IT",
+                    )}
                   </td>
                   <td>
                     <Badge bg={BADGE_STATO[prenotazione.statoPrenotazione]}>
