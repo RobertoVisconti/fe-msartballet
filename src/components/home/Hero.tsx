@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { LuInstagram } from "react-icons/lu";
 
 function Hero() {
   return (
@@ -25,8 +26,14 @@ function Hero() {
           <Link to="/corsi" className="btn-accent hero-cta">
             Guarda i corsi
           </Link>
-          <a href="#scuola" className="hero-link">
-            La nostra storia
+          <a
+            href="https://www.instagram.com/ms_artballet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hero-social"
+            aria-label="Seguici su Instagram"
+          >
+            <LuInstagram size={20} strokeWidth={1.8} />
           </a>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Offcanvas } from "react-bootstrap";
 import { LuMenu, LuArrowLeft, LuLogOut } from "react-icons/lu";
 import { vociMenuAdmin } from "./adminNavItems";
@@ -13,11 +13,13 @@ function AdminSidebarMobile() {
   return (
     <>
       <div className="navbar-mobile-bar">
-        <img
-          src="/Logo_CapStone_Close.png"
-          alt="MS Art Ballet"
-          className="navbar-mobile-logo"
-        />
+        <Link to="/admin" className="navbar-mobile-logo-link">
+          <img
+            src="/Logo_CapStone_Close.png"
+            alt="MS Art Ballet"
+            className="navbar-mobile-logo"
+          />
+        </Link>
         <button
           type="button"
           className="navbar-mobile-toggle"

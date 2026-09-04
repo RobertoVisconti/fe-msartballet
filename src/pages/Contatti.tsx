@@ -28,7 +28,12 @@ function Contatti() {
         </div>
         <div className="contatto-blocco">
           <span className="contatto-etichetta">Social</span>
-          <a href="#" className="contatto-social">
+          <a
+            href="https://www.instagram.com/ms_artballet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contatto-social"
+          >
             Instagram
           </a>
         </div>

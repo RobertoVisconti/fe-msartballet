@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   LuArrowRight,
   LuUser,
@@ -17,9 +17,9 @@ function NavBarDesktop() {
 
   return (
     <nav className="navbar-desktop">
-      <div className="navbar-logo">
+      <Link to="/" className="navbar-logo">
         <img src="/Logo_CapStone.png" alt="MS Art Ballet" />
-      </div>
+      </Link>
 
       <span className="navbar-section-label">Navigazione</span>
 

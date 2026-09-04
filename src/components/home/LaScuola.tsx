@@ -1,54 +1,65 @@
-import { useEffect, useState } from "react";
-import { disciplinaApi } from "@/api/disciplinaApi";
-import { salaApi } from "@/api/salaApi";
+import { useRef, useState } from "react";
+import { LuVolume2, LuVolumeX } from "react-icons/lu";
+
+function calcolaStagione(): string {
+  const oggi = new Date();
+  const anno = oggi.getFullYear();
+  const mese = oggi.getMonth() + 1;
+  return mese >= 8 ? `${anno}/${anno + 1}` : `${anno - 1}/${anno}`;
+}
 
 function LaScuola() {
-  const [numeroDiscipline, setNumeroDiscipline] = useState<number | null>(null);
-  const [numeroSale, setNumeroSale] = useState<number | null>(null);
+  const stagione = calcolaStagione();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [conAudio, setConAudio] = useState(false);
+  const [pronto, setPronto] = useState(false);
 
-  useEffect(() => {
-    disciplinaApi
-      .lista({ size: 1 })
-      .then((pagina) => setNumeroDiscipline(pagina.totalElements))
-      .catch(() => {});
-    salaApi
-      .lista({ size: 1 })
-      .then((pagina) => setNumeroSale(pagina.totalElements))
-      .catch(() => {});
-  }, []);
+  function toggleAudio() {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    if (!video.muted) {
+      video.volume = 0.3;
+    }
+    setConAudio(!video.muted);
+  }
 
   return (
     <section className="scuola-section" id="scuola">
-      <div className="scuola-sinistra">
-        <span className="tag-stagione">Stagione 2026</span>
-        <h2>Come lavoriamo</h2>
-        <p>
-          Un metodo che unisce la disciplina della tecnica classica alla libertà
-          espressiva delle discipline contemporanee, in classi piccole seguite
-          da vicino.
-        </p>
-        <div className="scuola-stats">
-          <div className="stat">
-            <span className="stat-numero">12</span>
-            <span className="stat-etichetta">Allievi per classe</span>
-          </div>
-          <div className="stat">
-            <span className="stat-numero">{numeroDiscipline ?? "—"}</span>
-            <span className="stat-etichetta">Discipline</span>
-          </div>
-          <div className="stat">
-            <span className="stat-numero">{numeroSale ?? "—"}</span>
-            <span className="stat-etichetta">Sale attrezzate</span>
-          </div>
-        </div>
-      </div>
       <div className="scuola-destra">
+        <span className="tag-stagione">Stagione {stagione}</span>
         <span className="scuola-virgoletta">”</span>
         <p className="scuola-citazione">
           La danza non è solo movimento: è il modo in cui il corpo racconta ciò
           che le parole non arrivano a dire.
         </p>
         <span className="scuola-didascalia">Il nostro metodo</span>
+      </div>
+      <div className={`scuola-video${pronto ? " pronto" : ""}`}>
+        <video
+          ref={videoRef}
+          className="scuola-video-player"
+          autoPlay
+          muted
+          loop
+          playsInline
+          onClick={toggleAudio}
+          onLoadedData={() => setPronto(true)}
+        >
+          <source
+            src="/Video_CapStone_Mobile.mp4"
+            media="(max-width: 991.98px)"
+          />
+          <source src="/Video_CapStone_Desktop.mp4" />
+        </video>
+        <button
+          type="button"
+          className="scuola-video-audio"
+          onClick={toggleAudio}
+          aria-label={conAudio ? "Disattiva audio" : "Attiva audio"}
+        >
+          {conAudio ? <LuVolume2 size={18} /> : <LuVolumeX size={18} />}
+        </button>
       </div>
     </section>
   );

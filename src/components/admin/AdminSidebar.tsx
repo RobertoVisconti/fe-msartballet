@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { LuArrowLeft, LuLogOut } from "react-icons/lu";
 import { vociMenuAdmin } from "./adminNavItems";
 import { useAppDispatch } from "@/redux/store/hooks";
@@ -9,9 +9,9 @@ function AdminSidebar() {
 
   return (
     <nav className="navbar-desktop">
-      <div className="navbar-logo">
+      <Link to="/admin" className="navbar-logo">
         <img src="/Logo_CapStone.png" alt="MS Art Ballet" />
-      </div>
+      </Link>
 
       <span className="navbar-section-label">Area Admin</span>
 
