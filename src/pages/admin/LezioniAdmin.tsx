@@ -18,15 +18,17 @@ import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import SelectRicercabile from "@/components/common/SelectRicercabile";
+import Paginazione from "@/components/common/Paginazione";
 import {
   StatoCaricamento,
   StatoErrore,
   StatoVuoto,
-  AvvisoLimite,
 } from "@/components/common/StatiLista";
 import type { LezioneRespDTO, NewLezioneDTO } from "@/interfaces/lezione";
 import type { CorsoRespDTO, SalaRespDTO } from "@/interfaces/catalogo";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
+
+const DIMENSIONE_PAGINA = 20;
 
 const formVuoto: NewLezioneDTO = {
   dataOraInizio: "",
@@ -44,8 +46,13 @@ function adessoPerInput(): string {
 
 function LezioniAdmin() {
   const [pagina, setPagina] = useState<Page<LezioneRespDTO> | null>(null);
+  const [numeroPagina, setNumeroPagina] = useState(0);
   const [corsi, setCorsi] = useState<CorsoRespDTO[]>([]);
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
+  const [filtroCorso, setFiltroCorso] = useState("");
+  const [filtroSala, setFiltroSala] = useState("");
+  const [dal, setDal] = useState("");
+  const [al, setAl] = useState("");
   const [caricamento, setCaricamento] = useState(true);
   const [errore, setErrore] = useState(false);
   const [tentativo, setTentativo] = useState(0);
@@ -57,31 +64,38 @@ function LezioniAdmin() {
   const [inCorso, setInCorso] = useState(false);
   const notifica = useNotifica();
 
-  function caricaTutto() {
+  useEffect(() => {
+    corsoApi.lista({ size: 100 }).then((pagina) => setCorsi(pagina.content));
+    salaApi.lista({ size: 100 }).then((pagina) => setSale(pagina.content));
+  }, []);
+
+  function caricaLista() {
     setCaricamento(true);
-    Promise.all([
-      lezioneApi.lista({ size: 100 }),
-      corsoApi.lista({ size: 100 }),
-      salaApi.lista({ size: 100 }),
-    ])
-      .then(([paginaLezioni, paginaCorsi, paginaSale]) => {
-        setPagina(paginaLezioni);
-        setCorsi(paginaCorsi.content);
-        setSale(paginaSale.content);
+    lezioneApi
+      .lista({
+        idCorso: filtroCorso || undefined,
+        idSala: filtroSala || undefined,
+        dal: dal || undefined,
+        al: al || undefined,
+        page: numeroPagina,
+        size: DIMENSIONE_PAGINA,
+      })
+      .then((risultato) => {
+        setPagina(risultato);
         setErrore(false);
       })
       .catch(() => {
         setErrore(true);
-        notifica("Impossibile caricare i dati", "errore");
+        notifica("Impossibile caricare le lezioni", "errore");
       })
       .finally(() => setCaricamento(false));
   }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    caricaTutto();
+    caricaLista();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tentativo]);
+  }, [filtroCorso, filtroSala, dal, al, numeroPagina, tentativo]);
 
   function apriCreazione() {
     setInModifica(null);
@@ -114,7 +128,7 @@ function LezioniAdmin() {
         await lezioneApi.crea(form);
       }
       setModaleAperto(false);
-      caricaTutto();
+      caricaLista();
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       setErroreForm(
@@ -130,7 +144,11 @@ function LezioniAdmin() {
     if (!window.confirm(`Eliminare la lezione del ${etichetta}?`)) return;
     try {
       await lezioneApi.elimina(lezione.id);
-      caricaTutto();
+      if (pagina && pagina.numberOfElements === 1 && !pagina.first) {
+        setNumeroPagina((n) => n - 1);
+      } else {
+        caricaLista();
+      }
     } catch (err) {
       const error = err as AxiosError<ErrorsDTO>;
       notifica(
@@ -145,6 +163,8 @@ function LezioniAdmin() {
 
   const nessunCorso = corsi.length === 0;
   const nessunaSala = sale.length === 0;
+  const filtriAttivi =
+    filtroCorso !== "" || filtroSala !== "" || dal !== "" || al !== "";
 
   return (
     <Container className="page-container">
@@ -165,6 +185,60 @@ function LezioniAdmin() {
         </Alert>
       )}
 
+      <Row className="filtri-riga">
+        <Col md={6}>
+          <SelectRicercabile
+            opzioni={corsi.map((c) => ({ id: c.id, etichetta: c.titolo }))}
+            value={filtroCorso}
+            onChange={(id) => {
+              setNumeroPagina(0);
+              setFiltroCorso(id);
+            }}
+            placeholder="Tutti i corsi"
+          />
+        </Col>
+        <Col md={6}>
+          <SelectRicercabile
+            opzioni={sale.map((s) => ({ id: s.id, etichetta: s.titolo }))}
+            value={filtroSala}
+            onChange={(id) => {
+              setNumeroPagina(0);
+              setFiltroSala(id);
+            }}
+            placeholder="Tutte le sale"
+          />
+        </Col>
+      </Row>
+
+      <Row className="filtri-riga">
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Dal</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={dal}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setDal(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Al</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={al}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setAl(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+
       {caricamento ? (
         <StatoCaricamento testo="Caricamento lezioni..." />
       ) : errore ? (
@@ -173,10 +247,15 @@ function LezioniAdmin() {
           onRiprova={() => setTentativo((t) => t + 1)}
         />
       ) : !pagina || pagina.empty ? (
-        <StatoVuoto testo="Nessuna lezione programmata." />
+        <StatoVuoto
+          testo={
+            filtriAttivi
+              ? "Nessuna lezione corrisponde ai filtri impostati."
+              : "Nessuna lezione programmata."
+          }
+        />
       ) : (
         <>
-          <AvvisoLimite pagina={pagina} />
           <Table responsive className="tabella-admin">
             <thead>
               <tr>
@@ -216,6 +295,8 @@ function LezioniAdmin() {
               ))}
             </tbody>
           </Table>
+
+          <Paginazione pagina={pagina} onCambiaPagina={setNumeroPagina} />
         </>
       )}
 
