@@ -11,6 +11,8 @@ export interface PrenotazioneRespDTO {
   idUtente: string;
   nomeUtente: string;
   idLezione: string;
+  titoloCorso: string;
+  dataOraLezione: string;
 }
 
 export interface NewPrenotazioneDTO {

@@ -160,12 +160,6 @@ function PrenotazioniAdmin() {
     }
   }
 
-  function etichettaLezione(idLezione: string): string {
-    const lezione = lezioni.find((l) => l.id === idLezione);
-    if (!lezione) return "—";
-    return `${lezione.titoloCorso} — ${new Date(lezione.dataOraInizio).toLocaleString("it-IT")}`;
-  }
-
   const filtriAttivi =
     filtroLezione !== "" ||
     filtroStato !== "" ||
@@ -283,7 +277,12 @@ function PrenotazioniAdmin() {
               {pagina.content.map((prenotazione) => (
                 <tr key={prenotazione.id}>
                   <td>{prenotazione.nomeUtente}</td>
-                  <td>{etichettaLezione(prenotazione.idLezione)}</td>
+                  <td>
+                    {prenotazione.titoloCorso} —{" "}
+                    {new Date(prenotazione.dataOraLezione).toLocaleString(
+                      "it-IT",
+                    )}
+                  </td>
                   <td>
                     {new Date(prenotazione.dataPrenotazione).toLocaleDateString(
                       "it-IT",

@@ -769,6 +769,24 @@ button.navbar-link {
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: var(--space-5);
   margin-top: var(--space-5);
+  /* Ogni pannello alto quanto il suo contenuto: quelli vuoti non si
+     allungano fino all'altezza del piu pieno lasciando un buco. */
+  align-items: start;
+}
+
+/* La griglia porta gia il suo margine: qui basta l'etichetta. */
+.dashboard-etichetta + .registrazione-griglia {
+  margin-top: 0;
+}
+
+.dashboard-etichetta {
+  display: block;
+  margin-top: var(--space-13);
+  margin-bottom: var(--space-5);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
 }
 
 .dashboard-pannello {

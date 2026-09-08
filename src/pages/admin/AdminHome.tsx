@@ -105,10 +105,13 @@ function AdminHome() {
       allievoApi.lista({ accountAttivo: false, size: 1 }),
       insegnanteApi.lista({ size: 100 }),
       iscrizioneApi.lista({ stato: "ATTIVA", size: 1 }),
+      // Solo lezioni da oggi in poi: una prenotazione su una lezione gia
+      // passata non e piu confermabile e gonfierebbe il contatore.
       prenotazioneApi.lista({
         stato: "IN_ATTESA",
+        dataDa: isoData(adesso),
         size: RIGHE_PANNELLO,
-        sort: "dataPrenotazione,desc",
+        sort: "lezione.dataOraInizio,asc",
       }),
       lezioneApi.lista({
         dal: isoLocale(adesso),
@@ -171,6 +174,7 @@ function AdminHome() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tentativo]);
 
   if (caricamento) {
@@ -210,7 +214,7 @@ function AdminHome() {
       attenzione: false,
     },
     {
-      etichetta: "Prenotazioni in attesa",
+      etichetta: "Prenotazioni in attesa (da oggi)",
       valore: String(dati.prenotazioniInAttesa),
       icona: LuTicket,
       to: "/admin/prenotazioni",
@@ -315,14 +319,22 @@ function AdminHome() {
             <Link to="/admin/prenotazioni">Gestisci</Link>
           </div>
           {dati.prenotazioni.length === 0 ? (
-            <p className="dashboard-vuoto">Nessuna prenotazione in attesa.</p>
+            <p className="dashboard-vuoto">
+              Nessuna prenotazione in attesa su lezioni future.
+            </p>
           ) : (
             <ul className="dashboard-righe">
               {dati.prenotazioni.map((prenotazione) => (
                 <li key={prenotazione.id}>
-                  <span>{prenotazione.nomeUtente}</span>
+                  <span>
+                    {prenotazione.nomeUtente}
+                    <span className="dashboard-sala">
+                      {" "}
+                      · {prenotazione.titoloCorso}
+                    </span>
+                  </span>
                   <span className="dashboard-nota">
-                    {formattaDataOra(prenotazione.dataPrenotazione)}
+                    {formattaDataOra(prenotazione.dataOraLezione)}
                   </span>
                 </li>
               ))}
@@ -363,7 +375,7 @@ function AdminHome() {
         </section>
       </div>
 
-      <span className="navbar-section-label">Scorciatoie</span>
+      <span className="dashboard-etichetta">Scorciatoie</span>
       <div className="registrazione-griglia">
         <Link to="/admin/registrazione" className="registrazione-card">
           <LuUserPlus size={22} strokeWidth={1.6} />
