@@ -15,6 +15,7 @@ import { corsoApi } from "@/api/corsoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
+import SelectRicercabile from "@/components/common/SelectRicercabile";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -178,21 +179,20 @@ function PrenotazioniAdmin() {
 
       <Row className="filtri-riga">
         <Col md={6}>
-          <Form.Select
+          <SelectRicercabile
+            opzioni={lezioni.map((l) => ({
+              id: l.id,
+              etichetta: `${l.titoloCorso} — ${new Date(
+                l.dataOraInizio,
+              ).toLocaleString("it-IT")}`,
+            }))}
             value={filtroLezione}
-            onChange={(e) => {
+            onChange={(id) => {
               setNumeroPagina(0);
-              setFiltroLezione(e.target.value);
+              setFiltroLezione(id);
             }}
-          >
-            <option value="">Tutte le lezioni</option>
-            {lezioni.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.titoloCorso} —{" "}
-                {new Date(l.dataOraInizio).toLocaleString("it-IT")}
-              </option>
-            ))}
-          </Form.Select>
+            placeholder="Tutte le lezioni"
+          />
         </Col>
         <Col md={6}>
           <Form.Select
@@ -214,20 +214,15 @@ function PrenotazioniAdmin() {
 
       <Row className="filtri-riga">
         <Col md={4}>
-          <Form.Select
+          <SelectRicercabile
+            opzioni={corsi.map((c) => ({ id: c.id, etichetta: c.titolo }))}
             value={filtroCorso}
-            onChange={(e) => {
+            onChange={(id) => {
               setNumeroPagina(0);
-              setFiltroCorso(e.target.value);
+              setFiltroCorso(id);
             }}
-          >
-            <option value="">Tutti i corsi</option>
-            {corsi.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.titolo}
-              </option>
-            ))}
-          </Form.Select>
+            placeholder="Tutti i corsi"
+          />
         </Col>
         <Col md={4}>
           <Form.Group>

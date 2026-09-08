@@ -20,6 +20,7 @@ import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import { formattaPrezzo } from "@/utils/formattaPrezzo";
 import Paginazione from "@/components/common/Paginazione";
+import SelectRicercabile from "@/components/common/SelectRicercabile";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -275,20 +276,12 @@ function TransazioniAdmin() {
           <Modal.Body>
             <Form.Group className="mb-3">
               <Form.Label>Utente</Form.Label>
-              <Form.Select
+              <SelectRicercabile
+                opzioni={utenti}
                 value={form.idUtente}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, idUtente: e.target.value }))
-                }
+                onChange={(id) => setForm((p) => ({ ...p, idUtente: id }))}
                 required
-              >
-                <option value="">Seleziona...</option>
-                {utenti.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.etichetta}
-                  </option>
-                ))}
-              </Form.Select>
+              />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Metodo di pagamento</Form.Label>
@@ -321,20 +314,14 @@ function TransazioniAdmin() {
                   </Form.Select>
                 </Col>
                 <Col xs={7}>
-                  <Form.Select
+                  <SelectRicercabile
+                    opzioni={opzioniAcquisto()}
                     value={form.idAcquisto}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, idAcquisto: e.target.value }))
+                    onChange={(id) =>
+                      setForm((p) => ({ ...p, idAcquisto: id }))
                     }
                     required
-                  >
-                    <option value="">Seleziona...</option>
-                    {opzioniAcquisto().map((o) => (
-                      <option key={o.id} value={o.id}>
-                        {o.etichetta}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  />
                 </Col>
               </Row>
             </Form.Group>

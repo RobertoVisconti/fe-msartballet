@@ -17,6 +17,7 @@ import { salaApi } from "@/api/salaApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import { formattaPrezzo } from "@/utils/formattaPrezzo";
+import SelectRicercabile from "@/components/common/SelectRicercabile";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -259,39 +260,29 @@ function LezioniAdmin() {
               <Col md={12}>
                 <Form.Group className="mb-3">
                   <Form.Label>Corso</Form.Label>
-                  <Form.Select
+                  <SelectRicercabile
+                    opzioni={corsi.map((c) => ({
+                      id: c.id,
+                      etichetta: c.titolo,
+                    }))}
                     value={form.idCorso}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, idCorso: e.target.value }))
-                    }
+                    onChange={(id) => setForm((p) => ({ ...p, idCorso: id }))}
                     required
-                  >
-                    <option value="">Seleziona...</option>
-                    {corsi.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.titolo}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Sala</Form.Label>
-                  <Form.Select
+                  <SelectRicercabile
+                    opzioni={sale.map((s) => ({
+                      id: s.id,
+                      etichetta: s.titolo,
+                    }))}
                     value={form.idSala}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, idSala: e.target.value }))
-                    }
+                    onChange={(id) => setForm((p) => ({ ...p, idSala: id }))}
                     required
-                  >
-                    <option value="">Seleziona...</option>
-                    {sale.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.titolo}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
