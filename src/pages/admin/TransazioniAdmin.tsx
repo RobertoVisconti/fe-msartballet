@@ -66,14 +66,17 @@ function TransazioniAdmin() {
   const [sale, setSale] = useState<SalaRespDTO[]>([]);
   const [riferimentiCaricati, setRiferimentiCaricati] = useState(false);
 
+  const [filtroUtente, setFiltroUtente] = useState("");
+
+  const [filtroAcquisto, setFiltroAcquisto] = useState("");
+  const [dataDa, setDataDa] = useState("");
+  const [dataA, setDataA] = useState("");
+
   const [modaleAperto, setModaleAperto] = useState(false);
   const [form, setForm] = useState(formVuoto);
   const [inCorso, setInCorso] = useState(false);
   const notifica = useNotifica();
 
-  // Dati per le select del modale: cambiano raramente, si caricano una
-  // sola volta e non seguono la paginazione della tabella. Gli ospiti non
-  // compaiono come acquirenti: non possono effettuare acquisti.
   useEffect(() => {
     Promise.all([
       allievoApi.lista({ size: 100 }),
@@ -95,12 +98,23 @@ function TransazioniAdmin() {
         notifica("Impossibile caricare i dati di riferimento", "errore"),
       )
       .finally(() => setRiferimentiCaricati(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function caricaTransazioni() {
     setCaricamento(true);
+    const [tipoScelto, idScelto] = filtroAcquisto.split(":");
     transazioneApi
-      .lista({ page: numeroPagina, size: DIMENSIONE_PAGINA })
+      .lista({
+        page: numeroPagina,
+        size: DIMENSIONE_PAGINA,
+        idUtente: filtroUtente || undefined,
+        idProdotto: tipoScelto === "PRODOTTO" ? idScelto : undefined,
+        idCorso: tipoScelto === "CORSO" ? idScelto : undefined,
+        idSala: tipoScelto === "SALA" ? idScelto : undefined,
+        dal: dataDa ? `${dataDa}T00:00:00` : undefined,
+        al: dataA ? `${dataA}T23:59:59` : undefined,
+      })
       .then((risultato) => {
         setPagina(risultato);
         setErrore(false);
@@ -115,7 +129,8 @@ function TransazioniAdmin() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaTransazioni();
-  }, [numeroPagina, tentativo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numeroPagina, tentativo, filtroUtente, filtroAcquisto, dataDa, dataA]);
 
   function apriCreazione() {
     setForm(formVuoto);
@@ -197,6 +212,38 @@ function TransazioniAdmin() {
     return sale.map((s) => ({ id: s.id, etichetta: s.titolo }));
   }
 
+  // Tutto il filtrabile in una lista sola, con il tipo davanti all'etichetta.
+  function opzioniFiltroAcquisto() {
+    return [
+      ...prodotti.map((p) => ({
+        id: `PRODOTTO:${p.id}`,
+        etichetta: `Prodotto · ${p.titolo}`,
+      })),
+      ...corsi.map((c) => ({
+        id: `CORSO:${c.id}`,
+        etichetta: `Corso · ${c.titolo}`,
+      })),
+      ...sale.map((s) => ({
+        id: `SALA:${s.id}`,
+        etichetta: `Sala · ${s.titolo}`,
+      })),
+    ];
+  }
+
+  function azzeraFiltri() {
+    setNumeroPagina(0);
+    setFiltroUtente("");
+    setFiltroAcquisto("");
+    setDataDa("");
+    setDataA("");
+  }
+
+  const filtriAttivi =
+    filtroUtente !== "" ||
+    filtroAcquisto !== "" ||
+    dataDa !== "" ||
+    dataA !== "";
+
   const nessunUtente = riferimentiCaricati && utenti.length === 0;
 
   return (
@@ -217,6 +264,69 @@ function TransazioniAdmin() {
         </Alert>
       )}
 
+      <Row className="filtri-riga">
+        <Col md={6}>
+          <SelectRicercabile
+            opzioni={utenti}
+            value={filtroUtente}
+            onChange={(id) => {
+              setNumeroPagina(0);
+              setFiltroUtente(id);
+            }}
+            placeholder="Tutti gli utenti"
+            disabled={!riferimentiCaricati}
+          />
+        </Col>
+        <Col md={6}>
+          <SelectRicercabile
+            opzioni={opzioniFiltroAcquisto()}
+            value={filtroAcquisto}
+            onChange={(id) => {
+              setNumeroPagina(0);
+              setFiltroAcquisto(id);
+            }}
+            placeholder="Tutti gli acquisti"
+            disabled={!riferimentiCaricati}
+          />
+        </Col>
+      </Row>
+
+      <Row className="filtri-riga">
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Dal</Form.Label>
+            <Form.Control
+              type="date"
+              value={dataDa}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setDataDa(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="testo-secondario">Al</Form.Label>
+            <Form.Control
+              type="date"
+              value={dataA}
+              onChange={(e) => {
+                setNumeroPagina(0);
+                setDataA(e.target.value);
+              }}
+            />
+          </Form.Group>
+        </Col>
+        {filtriAttivi && (
+          <Col md={4} className="d-flex align-items-end">
+            <Button variant="outline-light" onClick={azzeraFiltri}>
+              Azzera filtri
+            </Button>
+          </Col>
+        )}
+      </Row>
+
       {caricamento ? (
         <StatoCaricamento testo="Caricamento transazioni..." />
       ) : errore ? (
@@ -225,7 +335,13 @@ function TransazioniAdmin() {
           onRiprova={() => setTentativo((t) => t + 1)}
         />
       ) : !pagina || pagina.empty ? (
-        <StatoVuoto testo="Nessuna transazione registrata." />
+        <StatoVuoto
+          testo={
+            filtriAttivi
+              ? "Nessuna transazione corrisponde ai filtri impostati."
+              : "Nessuna transazione registrata."
+          }
+        />
       ) : (
         <>
           <Table responsive className="tabella-admin">

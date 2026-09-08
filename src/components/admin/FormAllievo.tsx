@@ -330,7 +330,7 @@ function FormAllievo({
 
       {mostraCampiAdmin && (
         <>
-          <h2>Amministrazione (solo staff)</h2>
+          <h2>Amministrazione</h2>
           <Row>
             <Col md={6} className="d-flex align-items-center">
               <Form.Check
