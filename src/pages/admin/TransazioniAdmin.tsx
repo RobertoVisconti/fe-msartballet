@@ -67,8 +67,7 @@ function TransazioniAdmin() {
   const [riferimentiCaricati, setRiferimentiCaricati] = useState(false);
 
   const [filtroUtente, setFiltroUtente] = useState("");
-  // Vale "PRODOTTO:<id>" / "CORSO:<id>" / "SALA:<id>": un solo controllo
-  // invece di due, e ogni scelta filtra davvero (il backend vuole un id).
+
   const [filtroAcquisto, setFiltroAcquisto] = useState("");
   const [dataDa, setDataDa] = useState("");
   const [dataA, setDataA] = useState("");
@@ -78,9 +77,6 @@ function TransazioniAdmin() {
   const [inCorso, setInCorso] = useState(false);
   const notifica = useNotifica();
 
-  // Dati per le select del modale: cambiano raramente, si caricano una
-  // sola volta e non seguono la paginazione della tabella. Gli ospiti non
-  // compaiono come acquirenti: non possono effettuare acquisti.
   useEffect(() => {
     Promise.all([
       allievoApi.lista({ size: 100 }),
@@ -102,6 +98,7 @@ function TransazioniAdmin() {
         notifica("Impossibile caricare i dati di riferimento", "errore"),
       )
       .finally(() => setRiferimentiCaricati(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function caricaTransazioni() {
@@ -115,8 +112,6 @@ function TransazioniAdmin() {
         idProdotto: tipoScelto === "PRODOTTO" ? idScelto : undefined,
         idCorso: tipoScelto === "CORSO" ? idScelto : undefined,
         idSala: tipoScelto === "SALA" ? idScelto : undefined,
-        // Qui dal/al sono LocalDateTime, non LocalDate come in Prenotazioni:
-        // la data secca dell'input non basta, va completata con l'ora.
         dal: dataDa ? `${dataDa}T00:00:00` : undefined,
         al: dataA ? `${dataA}T23:59:59` : undefined,
       })
@@ -134,6 +129,7 @@ function TransazioniAdmin() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     caricaTransazioni();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numeroPagina, tentativo, filtroUtente, filtroAcquisto, dataDa, dataA]);
 
   function apriCreazione() {
