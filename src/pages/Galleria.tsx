@@ -2,17 +2,29 @@ import { useEffect, useState } from "react";
 import { Carousel, Modal } from "react-bootstrap";
 import { LuX } from "react-icons/lu";
 import { mediaApi } from "@/api/mediaApi";
+import { spettacoloApi } from "@/api/spettacoloApi";
 import {
   StatoCaricamento,
   StatoErrore,
   StatoVuoto,
   AvvisoLimite,
 } from "@/components/common/StatiLista";
-import type { MediaRespDTO } from "@/interfaces/galleria";
+import type { MediaRespDTO, SpettacoloRespDTO } from "@/interfaces/galleria";
 import type { Page } from "@/interfaces/common";
+
+function formattaDataEvento(data: string): string {
+  return new Date(data).toLocaleDateString("it-IT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 function Galleria() {
   const [pagina, setPagina] = useState<Page<MediaRespDTO> | null>(null);
+  const [spettacoli, setSpettacoli] = useState<
+    Record<string, SpettacoloRespDTO>
+  >({});
   const [caricamento, setCaricamento] = useState(true);
   const [errore, setErrore] = useState(false);
   const [tentativo, setTentativo] = useState(0);
@@ -22,10 +34,15 @@ function Galleria() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCaricamento(true);
-    mediaApi
-      .lista({ size: 50 })
-      .then((risultato) => {
-        setPagina(risultato);
+    Promise.all([
+      mediaApi.lista({ size: 50 }),
+      spettacoloApi.lista({ size: 50 }),
+    ])
+      .then(([paginaMedia, paginaSpettacoli]) => {
+        setPagina(paginaMedia);
+        setSpettacoli(
+          Object.fromEntries(paginaSpettacoli.content.map((s) => [s.id, s])),
+        );
         setErrore(false);
       })
       .catch(() => setErrore(true))
@@ -109,17 +126,32 @@ function Galleria() {
                 indicators={false}
                 controls={foto.length > 1}
               >
-                {foto.map((elemento) => (
-                  <Carousel.Item key={elemento.id}>
-                    <div className="galleria-lightbox-slide">
-                      <img
-                        src={elemento.url}
-                        alt={elemento.titolo}
-                        className="galleria-lightbox-img"
-                      />
-                    </div>
-                  </Carousel.Item>
-                ))}
+                {foto.map((elemento) => {
+                  const spettacolo = spettacoli[elemento.idSpettacolo];
+                  return (
+                    <Carousel.Item key={elemento.id}>
+                      <div className="galleria-lightbox-slide">
+                        <img
+                          src={elemento.url}
+                          alt={elemento.titolo}
+                          className="galleria-lightbox-img"
+                        />
+                      </div>
+                      <div className="galleria-lightbox-info">
+                        <p className="galleria-lightbox-titolo">
+                          {elemento.titolo}
+                        </p>
+                        {spettacolo && (
+                          <p className="galleria-lightbox-meta">
+                            {spettacolo.titolo} ·{" "}
+                            {formattaDataEvento(spettacolo.dataEvento)} ·{" "}
+                            {spettacolo.luogo}
+                          </p>
+                        )}
+                      </div>
+                    </Carousel.Item>
+                  );
+                })}
               </Carousel>
             )}
           </Modal>

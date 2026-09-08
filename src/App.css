@@ -25,8 +25,8 @@
   --color-border-soft-2: rgba(234, 231, 228, 0.2);
 
   /* Tipografia */
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-body: "Archivo", -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Nunito Sans", -apple-system, "Segoe UI", sans-serif;
 
   --fs-h1: clamp(32px, 3.2vw, 48px);
   --fs-h2: clamp(34px, 3.6vw, 54px);
@@ -319,7 +319,7 @@
   gap: 14px;
   padding: 15px 28px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -382,7 +382,7 @@ button.navbar-link {
   color: #fff;
   padding: 14px 18px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: background 0.25s;
@@ -453,7 +453,7 @@ button.navbar-link {
 
 .site-footer {
   background: var(--color-bg);
-  padding: 56px clamp(20px, 5vw, 72px);
+  padding: 32px clamp(20px, 5vw, 72px);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -972,7 +972,7 @@ button.navbar-link {
   padding: 12px 18px;
   border: 1px solid rgba(234, 231, 228, 0.35);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-text-primary);
@@ -989,7 +989,7 @@ button.navbar-link {
 
 .hero-kicker {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-accent);
@@ -1041,7 +1041,7 @@ button.navbar-link {
   background: var(--color-accent);
   color: #fff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   transition: background 0.25s;
@@ -1090,7 +1090,7 @@ button.navbar-link {
   color: var(--color-accent);
   padding: 8px 14px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -1166,7 +1166,7 @@ button.navbar-link {
 
 .scuola-didascalia {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -1250,25 +1250,39 @@ button.navbar-link {
 
 .corso-prezzo {
   color: var(--color-accent);
-  font-weight: 700;
+  font-weight: 600;
 }
 /* #endregion */
 
 /* #region ============================ SALE ============================ */
 
+.pagina-sale {
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+
+.pagina-sale .catalogo-intro {
+  margin-bottom: 48px;
+}
+
 .sale-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
-  gap: 56px;
+  grid-template-columns: repeat(2, max-content);
+  gap: 40px;
   align-items: start;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 .sala-card:nth-child(2n) {
-  margin-top: 140px;
+  margin-top: 80px;
 }
 
 .sala-img {
-  width: 100%;
+  height: 40vh;
+  width: auto;
+  max-width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   margin-bottom: 22px;
@@ -1285,18 +1299,25 @@ button.navbar-link {
   justify-content: space-between;
   align-items: baseline;
   border-bottom: 1px solid var(--color-border-soft-2);
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 
 .sala-titolo-riga h3 {
-  font-size: 30px;
+  font-size: 26px;
+}
+
+.sala-numero {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
 }
 
 .sala-prezzo {
   font-size: 15px;
   line-height: 1.8;
   color: var(--color-text-tertiary);
-  margin: 18px 0 24px;
+  margin: 10px 0 14px;
 }
 
 .sala-footer {
@@ -1307,7 +1328,7 @@ button.navbar-link {
 .sala-affitta {
   color: var(--color-accent);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 /* #endregion */
 
@@ -1391,7 +1412,7 @@ button.navbar-link {
   color: #fff;
   padding: 16px 24px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   transition:
     background 0.25s,
@@ -1420,7 +1441,7 @@ button.navbar-link {
 
 .contatto-etichetta {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
@@ -1562,6 +1583,11 @@ button.navbar-link {
   transform: scale(1.06);
 }
 
+.galleria-lightbox .modal-content {
+  background: var(--color-text-primary);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
 .galleria-lightbox-chiudi {
   position: absolute;
   top: 16px;
@@ -1570,7 +1596,7 @@ button.navbar-link {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--color-border-soft-2);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   background: rgba(0, 0, 0, 0.55);
   color: var(--color-white);
   display: flex;
@@ -1594,14 +1620,38 @@ button.navbar-link {
 
 .galleria-lightbox-img {
   max-width: 100%;
-  max-height: 82vh;
+  max-height: 72vh;
   object-fit: contain;
+}
+
+.galleria-lightbox-info {
+  padding: 16px clamp(16px, 4vw, 48px) 4px;
+  text-align: center;
+}
+
+.galleria-lightbox-titolo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.galleria-lightbox-meta {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 0;
 }
 
 .galleria-lightbox .carousel-control-prev,
 .galleria-lightbox .carousel-control-next {
   width: 64px;
   opacity: 0.85;
+}
+
+.galleria-lightbox .carousel-control-prev-icon,
+.galleria-lightbox .carousel-control-next-icon {
+  filter: invert(1) grayscale(1);
 }
 
 .galleria-lightbox .carousel-control-prev:hover,
@@ -1683,7 +1733,7 @@ button.navbar-link {
 
 .lezione-prezzo {
   color: var(--color-accent);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
 }
 /* #endregion */
@@ -1703,7 +1753,7 @@ button.navbar-link {
   border: none;
   padding: 10px 16px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -1754,7 +1804,7 @@ button.navbar-link {
   border: none;
   padding: 8px 14px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -1886,7 +1936,7 @@ button.navbar-link {
 .scuola-pagina-eyebrow {
   display: block;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-accent);
@@ -1938,11 +1988,16 @@ button.navbar-link {
   }
 
   .sale-grid {
-    gap: 40px;
+    grid-template-columns: 1fr;
   }
 
   .sala-card:nth-child(2n) {
     margin-top: 0;
+  }
+
+  .sala-img {
+    height: auto;
+    width: min(340px, 100%);
   }
 
   .scuola-section > div:first-child {
@@ -1977,21 +2032,21 @@ button.navbar-link {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .galleria-lightbox-slide {
+    min-height: auto;
+  }
+
   .galleria-lightbox-img {
-    max-height: 90vh;
+    max-height: 60vh;
   }
 
   .site-footer {
-    padding: 40px clamp(20px, 5vw, 72px);
+    padding: 28px clamp(20px, 5vw, 72px);
     gap: 24px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
   }
 
   .footer-links {
     gap: 14px 20px;
-    justify-content: center;
   }
 }
 /* #endregion */

@@ -30,11 +30,11 @@ function Sale() {
   }, [tentativo]);
 
   return (
-    <div className="catalogo-page">
+    <div className="catalogo-page pagina-sale">
       <h1>Sale</h1>
       <p className="catalogo-intro">
-        Due spazi attrezzati, disponibili anche in affitto per prove e
-        ripetizioni private.
+        Due spazi attrezzati, disponibili anche in affitto per prove e lezioni
+        private.
       </p>
 
       {caricamento ? (
