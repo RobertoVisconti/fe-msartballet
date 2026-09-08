@@ -25,8 +25,8 @@
   --color-border-soft-2: rgba(234, 231, 228, 0.2);
 
   /* Tipografia */
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-body: "Archivo", -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Nunito Sans", -apple-system, "Segoe UI", sans-serif;
 
   --fs-h1: clamp(32px, 3.2vw, 48px);
   --fs-h2: clamp(34px, 3.6vw, 54px);
@@ -320,7 +320,7 @@
   gap: 14px;
   padding: 15px 28px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -383,7 +383,7 @@ button.navbar-link {
   color: #fff;
   padding: 14px 18px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: background 0.25s;
@@ -977,7 +977,7 @@ button.navbar-link {
   padding: 12px 18px;
   border: 1px solid rgba(234, 231, 228, 0.35);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-text-primary);
@@ -994,7 +994,7 @@ button.navbar-link {
 
 .hero-kicker {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-accent);
@@ -1046,7 +1046,7 @@ button.navbar-link {
   background: var(--color-accent);
   color: #fff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   transition: background 0.25s;
@@ -1095,7 +1095,7 @@ button.navbar-link {
   color: var(--color-accent);
   padding: 8px 14px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -1171,7 +1171,7 @@ button.navbar-link {
 
 .scuola-didascalia {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -1202,7 +1202,10 @@ button.navbar-link {
 
 .corsi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(240px, calc(100% / var(--colonne, 4) - 1px))), 1fr)
+  );
   gap: 1px;
   background: var(--color-border);
   border: 1px solid var(--color-border);
@@ -1219,12 +1222,6 @@ button.navbar-link {
 
 .corso-card:hover {
   background: var(--color-accent-tint-weak);
-}
-
-.corso-numero {
-  font-family: var(--font-display);
-  font-size: 15px;
-  color: var(--color-accent);
 }
 
 .corso-card h3 {
@@ -1258,7 +1255,7 @@ button.navbar-link {
 
 .corso-prezzo {
   color: var(--color-accent);
-  font-weight: 700;
+  font-weight: 600;
 }
 /* #endregion */
 
@@ -1316,7 +1313,7 @@ button.navbar-link {
 
 .sala-numero {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
 }
@@ -1336,7 +1333,7 @@ button.navbar-link {
 .sala-affitta {
   color: var(--color-accent);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 /* #endregion */
 
@@ -1344,7 +1341,10 @@ button.navbar-link {
 
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(170px, calc(100% / var(--colonne, 5) - 28px))), 1fr)
+  );
   gap: 28px;
 }
 
@@ -1417,7 +1417,7 @@ button.navbar-link {
   color: #fff;
   padding: 16px 24px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   transition:
     background 0.25s,
@@ -1446,7 +1446,7 @@ button.navbar-link {
 
 .contatto-etichetta {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
@@ -1588,6 +1588,11 @@ button.navbar-link {
   transform: scale(1.06);
 }
 
+.galleria-lightbox .modal-content {
+  background: var(--color-text-primary);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
 .galleria-lightbox-chiudi {
   position: absolute;
   top: 16px;
@@ -1596,7 +1601,7 @@ button.navbar-link {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--color-border-soft-2);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   background: rgba(0, 0, 0, 0.55);
   color: var(--color-white);
   display: flex;
@@ -1620,14 +1625,38 @@ button.navbar-link {
 
 .galleria-lightbox-img {
   max-width: 100%;
-  max-height: 82vh;
+  max-height: 72vh;
   object-fit: contain;
+}
+
+.galleria-lightbox-info {
+  padding: 16px clamp(16px, 4vw, 48px) 4px;
+  text-align: center;
+}
+
+.galleria-lightbox-titolo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.galleria-lightbox-meta {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 0;
 }
 
 .galleria-lightbox .carousel-control-prev,
 .galleria-lightbox .carousel-control-next {
   width: 64px;
   opacity: 0.85;
+}
+
+.galleria-lightbox .carousel-control-prev-icon,
+.galleria-lightbox .carousel-control-next-icon {
+  filter: invert(1) grayscale(1);
 }
 
 .galleria-lightbox .carousel-control-prev:hover,
@@ -1709,7 +1738,7 @@ button.navbar-link {
 
 .lezione-prezzo {
   color: var(--color-accent);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
 }
 /* #endregion */
@@ -1729,7 +1758,7 @@ button.navbar-link {
   border: none;
   padding: 10px 16px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -1780,7 +1809,7 @@ button.navbar-link {
   border: none;
   padding: 8px 14px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -1912,7 +1941,7 @@ button.navbar-link {
 .scuola-pagina-eyebrow {
   display: block;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-accent);
@@ -2008,8 +2037,12 @@ button.navbar-link {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .galleria-lightbox-slide {
+    min-height: auto;
+  }
+
   .galleria-lightbox-img {
-    max-height: 90vh;
+    max-height: 60vh;
   }
 
   .site-footer {
