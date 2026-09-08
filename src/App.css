@@ -711,6 +711,152 @@ button.navbar-link {
 }
 /* #endregion */
 
+/* #region ====================== DASHBOARD ADMIN ======================= */
+
+.dashboard-tessere {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.dashboard-tessera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-7);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  transition: var(--transition-ui);
+}
+
+.dashboard-tessera svg {
+  color: var(--color-text-muted);
+}
+
+.dashboard-tessera:hover {
+  background: var(--color-accent-tint-weak);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+/* Bordo magenta solo quando il numero chiede un intervento. */
+.dashboard-tessera.attenzione {
+  border-color: var(--color-accent);
+}
+
+.dashboard-tessera.attenzione svg,
+.dashboard-tessera.attenzione .dashboard-tessera-valore {
+  color: var(--color-accent);
+}
+
+.dashboard-tessera-valore {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-tessera-etichetta {
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dashboard-pannelli {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.dashboard-pannello {
+  border: 1px solid var(--color-border);
+  padding: var(--space-7);
+}
+
+.dashboard-pannello-testa {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.dashboard-pannello-testa h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--fs-body-lg);
+}
+
+.dashboard-pannello-testa h2 svg {
+  color: var(--color-accent);
+}
+
+.dashboard-pannello-testa a {
+  font-size: var(--fs-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.dashboard-righe {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-righe li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: var(--fs-body-sm);
+}
+
+.dashboard-righe li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-righe a {
+  color: var(--color-text-primary);
+}
+
+.dashboard-righe a:hover {
+  color: var(--color-accent);
+}
+
+.dashboard-nota {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dashboard-nota.scaduto {
+  color: var(--color-accent);
+}
+
+.dashboard-sala {
+  color: var(--color-text-muted);
+}
+
+.dashboard-vuoto {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: var(--color-text-muted);
+}
+
+.dashboard-righe + .dashboard-vuoto {
+  margin-top: var(--space-3);
+}
+/* #endregion */
+
 /* #region ======================== INDICE ADMIN ======================== */
 
 .registrazione-scelta {

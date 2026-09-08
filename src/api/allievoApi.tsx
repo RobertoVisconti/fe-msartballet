@@ -9,6 +9,8 @@ export interface FiltriAllievi {
   certificatoScadeEntro?: string;
   page?: number;
   size?: number;
+  /** Es. "dataScadenzaCertificato,asc": lo legge il Pageable di Spring. */
+  sort?: string;
 }
 
 export const allievoApi = {
