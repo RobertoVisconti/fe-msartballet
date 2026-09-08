@@ -59,6 +59,11 @@
 
   /* Altro */
   --radius: 0;
+
+  /* Altezza delle due fasce della home (hero + la scuola) */
+  --h-blocco-home: 620px;
+  --h-blocco-home-mobile: 400px;
+
   --transition-ui: color 0.25s, background 0.25s, border-color 0.25s;
   --transition-card: background 0.3s ease;
   --transition-filter: filter 0.5s ease;
@@ -172,6 +177,72 @@
 .btn-accent:hover:not(:disabled) {
   background: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
+}
+/* #endregion */
+
+/* #region ===================== SELECT RICERCABILE ===================== */
+
+.select-ricercabile {
+  position: relative;
+}
+
+/* Spazio a destra per la freccia, come nella select nativa. */
+.select-ricercabile-campo {
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.select-ricercabile-campo:focus {
+  cursor: text;
+}
+
+.select-ricercabile-icona {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.select-ricercabile-lista {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-soft-2);
+}
+
+.select-ricercabile-voce {
+  padding: 8px 12px;
+  font-size: var(--fs-body-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.select-ricercabile-voce.vuota {
+  color: var(--color-text-muted);
+}
+
+.select-ricercabile-voce.scelta {
+  color: var(--color-accent);
+}
+
+.select-ricercabile-voce.evidenziata {
+  background: var(--color-accent-tint);
+}
+
+.select-ricercabile-vuoto {
+  padding: 10px 12px;
+  font-size: var(--fs-body-sm);
+  color: var(--color-text-muted);
 }
 /* #endregion */
 
@@ -640,6 +711,170 @@ button.navbar-link {
 }
 /* #endregion */
 
+/* #region ====================== DASHBOARD ADMIN ======================= */
+
+.dashboard-tessere {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.dashboard-tessera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-7);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  transition: var(--transition-ui);
+}
+
+.dashboard-tessera svg {
+  color: var(--color-text-muted);
+}
+
+.dashboard-tessera:hover {
+  background: var(--color-accent-tint-weak);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+/* Bordo magenta solo quando il numero chiede un intervento. */
+.dashboard-tessera.attenzione {
+  border-color: var(--color-accent);
+}
+
+.dashboard-tessera.attenzione svg,
+.dashboard-tessera.attenzione .dashboard-tessera-valore {
+  color: var(--color-accent);
+}
+
+.dashboard-tessera-valore {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-tessera-etichetta {
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dashboard-pannelli {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+  /* Ogni pannello alto quanto il suo contenuto: quelli vuoti non si
+     allungano fino all'altezza del piu pieno lasciando un buco. */
+  align-items: start;
+}
+
+/* La griglia porta gia il suo margine: qui basta l'etichetta. */
+.dashboard-etichetta + .registrazione-griglia {
+  margin-top: 0;
+}
+
+.dashboard-etichetta {
+  display: block;
+  margin-top: var(--space-13);
+  margin-bottom: var(--space-5);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.dashboard-pannello {
+  border: 1px solid var(--color-border);
+  padding: var(--space-7);
+}
+
+.dashboard-pannello-testa {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.dashboard-pannello-testa h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--fs-body-lg);
+}
+
+.dashboard-pannello-testa h2 svg {
+  color: var(--color-accent);
+}
+
+.dashboard-pannello-testa a {
+  font-size: var(--fs-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.dashboard-righe {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-righe li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: var(--fs-body-sm);
+}
+
+.dashboard-righe li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-righe a {
+  color: var(--color-text-primary);
+}
+
+.dashboard-righe a:hover {
+  color: var(--color-accent);
+}
+
+.dashboard-nota {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dashboard-nota.scaduto {
+  color: var(--color-accent);
+}
+
+.dashboard-sala {
+  color: var(--color-text-muted);
+}
+
+.dashboard-vuoto {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: var(--color-text-muted);
+}
+
+.dashboard-righe + .dashboard-vuoto {
+  margin-top: var(--space-3);
+}
+/* #endregion */
+
 /* #region ======================== INDICE ADMIN ======================== */
 
 .registrazione-scelta {
@@ -713,7 +948,7 @@ button.navbar-link {
 
 .hero-media {
   position: relative;
-  height: 780px;
+  height: var(--h-blocco-home);
   overflow: hidden;
   border-right: 1px solid var(--color-border);
 }
@@ -868,7 +1103,7 @@ button.navbar-link {
 .scuola-video {
   position: relative;
   overflow: hidden;
-  min-height: 620px;
+  min-height: var(--h-blocco-home);
   background: var(--color-bg-alt);
   opacity: 0;
   transition: opacity 1.1s ease;
@@ -911,7 +1146,7 @@ button.navbar-link {
 
 .scuola-destra {
   background: var(--color-bg);
-  padding: 140px clamp(32px, 5vw, 72px);
+  padding: clamp(64px, 7vw, 140px) clamp(32px, 5vw, 72px);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1705,7 +1940,7 @@ button.navbar-link {
 
 @media (max-width: 767.98px) {
   .hero-media {
-    height: clamp(360px, 55vh, 520px);
+    height: var(--h-blocco-home-mobile);
     border-right: none;
     border-bottom: 1px solid var(--color-border);
   }
@@ -1739,7 +1974,7 @@ button.navbar-link {
   }
 
   .scuola-video {
-    min-height: 400px;
+    min-height: var(--h-blocco-home-mobile);
   }
 
   .lezione-data {

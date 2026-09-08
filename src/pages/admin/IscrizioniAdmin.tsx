@@ -14,6 +14,7 @@ import { corsoApi } from "@/api/corsoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
+import SelectRicercabile from "@/components/common/SelectRicercabile";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -141,20 +142,15 @@ function IscrizioniAdmin() {
 
       <Row className="filtri-riga">
         <Col md={6}>
-          <Form.Select
+          <SelectRicercabile
+            opzioni={corsi.map((c) => ({ id: c.id, etichetta: c.titolo }))}
             value={filtroCorso}
-            onChange={(e) => {
+            onChange={(id) => {
               setNumeroPagina(0);
-              setFiltroCorso(e.target.value);
+              setFiltroCorso(id);
             }}
-          >
-            <option value="">Tutti i corsi</option>
-            {corsi.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.titolo}
-              </option>
-            ))}
-          </Form.Select>
+            placeholder="Tutti i corsi"
+          />
         </Col>
         <Col md={6}>
           <Form.Select

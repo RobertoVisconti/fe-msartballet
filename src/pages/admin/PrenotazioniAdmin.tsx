@@ -15,6 +15,7 @@ import { corsoApi } from "@/api/corsoApi";
 import { useNotifica } from "@/components/common/ToastProvider";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import Paginazione from "@/components/common/Paginazione";
+import SelectRicercabile from "@/components/common/SelectRicercabile";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -159,12 +160,6 @@ function PrenotazioniAdmin() {
     }
   }
 
-  function etichettaLezione(idLezione: string): string {
-    const lezione = lezioni.find((l) => l.id === idLezione);
-    if (!lezione) return "—";
-    return `${lezione.titoloCorso} — ${new Date(lezione.dataOraInizio).toLocaleString("it-IT")}`;
-  }
-
   const filtriAttivi =
     filtroLezione !== "" ||
     filtroStato !== "" ||
@@ -178,21 +173,20 @@ function PrenotazioniAdmin() {
 
       <Row className="filtri-riga">
         <Col md={6}>
-          <Form.Select
+          <SelectRicercabile
+            opzioni={lezioni.map((l) => ({
+              id: l.id,
+              etichetta: `${l.titoloCorso} — ${new Date(
+                l.dataOraInizio,
+              ).toLocaleString("it-IT")}`,
+            }))}
             value={filtroLezione}
-            onChange={(e) => {
+            onChange={(id) => {
               setNumeroPagina(0);
-              setFiltroLezione(e.target.value);
+              setFiltroLezione(id);
             }}
-          >
-            <option value="">Tutte le lezioni</option>
-            {lezioni.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.titoloCorso} —{" "}
-                {new Date(l.dataOraInizio).toLocaleString("it-IT")}
-              </option>
-            ))}
-          </Form.Select>
+            placeholder="Tutte le lezioni"
+          />
         </Col>
         <Col md={6}>
           <Form.Select
@@ -214,20 +208,15 @@ function PrenotazioniAdmin() {
 
       <Row className="filtri-riga">
         <Col md={4}>
-          <Form.Select
+          <SelectRicercabile
+            opzioni={corsi.map((c) => ({ id: c.id, etichetta: c.titolo }))}
             value={filtroCorso}
-            onChange={(e) => {
+            onChange={(id) => {
               setNumeroPagina(0);
-              setFiltroCorso(e.target.value);
+              setFiltroCorso(id);
             }}
-          >
-            <option value="">Tutti i corsi</option>
-            {corsi.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.titolo}
-              </option>
-            ))}
-          </Form.Select>
+            placeholder="Tutti i corsi"
+          />
         </Col>
         <Col md={4}>
           <Form.Group>
@@ -288,7 +277,12 @@ function PrenotazioniAdmin() {
               {pagina.content.map((prenotazione) => (
                 <tr key={prenotazione.id}>
                   <td>{prenotazione.nomeUtente}</td>
-                  <td>{etichettaLezione(prenotazione.idLezione)}</td>
+                  <td>
+                    {prenotazione.titoloCorso} —{" "}
+                    {new Date(prenotazione.dataOraLezione).toLocaleString(
+                      "it-IT",
+                    )}
+                  </td>
                   <td>
                     {new Date(prenotazione.dataPrenotazione).toLocaleDateString(
                       "it-IT",
