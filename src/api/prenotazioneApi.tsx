@@ -16,7 +16,6 @@ export interface FiltriPrenotazioni {
   dataA?: string;
   page?: number;
   size?: number;
-  /** Es. "dataPrenotazione,desc": lo legge il Pageable di Spring. */
   sort?: string;
 }
 

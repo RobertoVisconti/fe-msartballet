@@ -9,7 +9,6 @@ export interface FiltriLezioni {
   al?: string;
   page?: number;
   size?: number;
-  /** Es. "dataOraInizio,asc": lo legge il Pageable di Spring. */
   sort?: string;
 }
 

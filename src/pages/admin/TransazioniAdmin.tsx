@@ -212,7 +212,6 @@ function TransazioniAdmin() {
     return sale.map((s) => ({ id: s.id, etichetta: s.titolo }));
   }
 
-  // Tutto il filtrabile in una lista sola, con il tipo davanti all'etichetta.
   function opzioniFiltroAcquisto() {
     return [
       ...prodotti.map((p) => ({
