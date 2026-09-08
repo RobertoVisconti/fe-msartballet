@@ -50,7 +50,7 @@ function Sale() {
         <>
           <AvvisoLimite pagina={pagina} />
           <div className="sale-grid">
-            {pagina.content.map((sala, indice) => (
+            {pagina.content.map((sala) => (
               <article key={sala.id} className="sala-card">
                 {sala.imgSala ? (
                   <img
@@ -63,9 +63,6 @@ function Sale() {
                 )}
                 <div className="sala-titolo-riga">
                   <h3>{sala.titolo}</h3>
-                  <span className="sala-numero">
-                    {String(indice + 1).padStart(2, "0")}
-                  </span>
                 </div>
                 <p className="sala-prezzo">
                   {formattaPrezzo(sala.prezzoAffitto)} / affitto

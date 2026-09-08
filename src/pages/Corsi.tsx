@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AxiosError } from "axios";
+import type { CSSProperties } from "react";
 import { useAppSelector } from "@/redux/store/hooks";
 import { corsoApi } from "@/api/corsoApi";
 import { iscrizioneApi } from "@/api/iscrizioneApi";
@@ -13,6 +14,9 @@ import type { CorsoRespDTO } from "@/interfaces/catalogo";
 import type { Page, ErrorsDTO } from "@/interfaces/common";
 import { estraiMessaggioErrore } from "@/utils/erroreApi";
 import { formattaPrezzo } from "@/utils/formattaPrezzo";
+import { colonneOttimali } from "@/utils/colonneGriglia";
+
+const MAX_COLONNE = 5;
 
 const ETICHETTE_GIORNO: Record<string, string> = {
   LUNEDI: "Lunedì",
@@ -63,9 +67,19 @@ function Corsi() {
       ) : (
         <>
           <AvvisoLimite pagina={pagina} />
-          <div className="corsi-grid">
-            {pagina.content.map((corso, indice) => (
-              <CorsoCard key={corso.id} corso={corso} indice={indice} />
+          <div
+            className="corsi-grid"
+            style={
+              {
+                "--colonne": colonneOttimali(
+                  pagina.content.length,
+                  MAX_COLONNE,
+                ),
+              } as CSSProperties
+            }
+          >
+            {pagina.content.map((corso) => (
+              <CorsoCard key={corso.id} corso={corso} />
             ))}
           </div>
         </>
@@ -76,10 +90,9 @@ function Corsi() {
 
 interface CorsoCardProps {
   corso: CorsoRespDTO;
-  indice: number;
 }
 
-function CorsoCard({ corso, indice }: CorsoCardProps) {
+function CorsoCard({ corso }: CorsoCardProps) {
   const utente = useAppSelector((state) => state.auth.utente);
   const [inCorso, setInCorso] = useState(false);
   const [esito, setEsito] = useState<"ok" | "errore" | null>(null);
@@ -105,9 +118,6 @@ function CorsoCard({ corso, indice }: CorsoCardProps) {
 
   return (
     <article className="corso-card">
-      <span className="corso-numero">
-        {String(indice + 1).padStart(2, "0")}
-      </span>
       <h3>{corso.titolo}</h3>
       <span className="corso-meta">
         {corso.nomeDisciplina} · {corso.livelloCorso}

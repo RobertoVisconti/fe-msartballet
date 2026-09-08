@@ -186,7 +186,6 @@
   position: relative;
 }
 
-/* Spazio a destra per la freccia, come nella select nativa. */
 .select-ricercabile-campo {
   padding-right: 36px;
   cursor: pointer;
@@ -740,7 +739,6 @@ button.navbar-link {
   color: var(--color-text-primary);
 }
 
-/* Bordo magenta solo quando il numero chiede un intervento. */
 .dashboard-tessera.attenzione {
   border-color: var(--color-accent);
 }
@@ -769,12 +767,9 @@ button.navbar-link {
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: var(--space-5);
   margin-top: var(--space-5);
-  /* Ogni pannello alto quanto il suo contenuto: quelli vuoti non si
-     allungano fino all'altezza del piu pieno lasciando un buco. */
   align-items: start;
 }
 
-/* La griglia porta gia il suo margine: qui basta l'etichetta. */
 .dashboard-etichetta + .registrazione-griglia {
   margin-top: 0;
 }
@@ -1202,7 +1197,10 @@ button.navbar-link {
 
 .corsi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(240px, calc(100% / var(--colonne, 4) - 1px))), 1fr)
+  );
   gap: 1px;
   background: var(--color-border);
   border: 1px solid var(--color-border);
@@ -1219,12 +1217,6 @@ button.navbar-link {
 
 .corso-card:hover {
   background: var(--color-accent-tint-weak);
-}
-
-.corso-numero {
-  font-family: var(--font-display);
-  font-size: 15px;
-  color: var(--color-accent);
 }
 
 .corso-card h3 {
@@ -1300,13 +1292,6 @@ button.navbar-link {
   font-size: 30px;
 }
 
-.sala-numero {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--color-text-muted);
-}
-
 .sala-prezzo {
   font-size: 15px;
   line-height: 1.8;
@@ -1330,7 +1315,10 @@ button.navbar-link {
 
 .store-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(170px, calc(100% / var(--colonne, 5) - 28px))), 1fr)
+  );
   gap: 28px;
 }
 
@@ -1996,10 +1984,14 @@ button.navbar-link {
   .site-footer {
     padding: 40px clamp(20px, 5vw, 72px);
     gap: 24px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .footer-links {
     gap: 14px 20px;
+    justify-content: center;
   }
 }
 /* #endregion */

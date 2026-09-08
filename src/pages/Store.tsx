@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { prodottoApi } from "@/api/prodottoApi";
 import { formattaPrezzo } from "@/utils/formattaPrezzo";
+import { colonneOttimali } from "@/utils/colonneGriglia";
 import {
   StatoCaricamento,
   StatoErrore,
@@ -9,6 +11,8 @@ import {
 } from "@/components/common/StatiLista";
 import type { ProdottoRespDTO } from "@/interfaces/catalogo";
 import type { Page } from "@/interfaces/common";
+
+const MAX_COLONNE = 6;
 
 function Store() {
   const [pagina, setPagina] = useState<Page<ProdottoRespDTO> | null>(null);
@@ -48,7 +52,17 @@ function Store() {
       ) : (
         <>
           <AvvisoLimite pagina={pagina} />
-          <div className="store-grid">
+          <div
+            className="store-grid"
+            style={
+              {
+                "--colonne": colonneOttimali(
+                  pagina.content.length,
+                  MAX_COLONNE,
+                ),
+              } as CSSProperties
+            }
+          >
             {pagina.content.map((prodotto) => (
               <article key={prodotto.id} className="prodotto-card">
                 {prodotto.imgProdotto ? (
